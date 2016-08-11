@@ -16,6 +16,7 @@ private:
 	void initPoints();
 	float attack, sustain, decay, release;
 	IPoint startPoint, attackPoint, retainPoint, endPoint; //names should be changed.
+	void updatePointPosition();
 protected:
 	double convertToGraphicX(double value);
 	double convertToPercentX(double value);
@@ -26,6 +27,7 @@ public:
 		initPoints();
 	};
 	~ADSRVisualizationControl() {};
+	void setADSR(float att, float dec, float sus, float rel);
 
 	bool IsDirty() { return true; };
 

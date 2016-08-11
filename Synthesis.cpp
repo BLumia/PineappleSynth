@@ -7,6 +7,14 @@
 
 const int kNumPrograms = 5;
 
+enum EAdsr
+{
+	E_Att = 0,
+	E_Dec,
+	E_Sus,
+	E_Rel,
+};
+
 enum EParams
 {
 	mWaveform = 0,
@@ -51,24 +59,29 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	// Knob bitmap for ADSR
 	IBitmap knobBitmap = pGraphics->LoadIBitmap(KNOB_ID, KNOB_FN, 31);
 	// Attack knob:
+	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 10, mAttack, &knobBitmap);
 	GetParam(mAttack)->InitDouble("Attack", 0.01, 0.01, 10.0, 0.001);
 	GetParam(mAttack)->SetShape(3);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 329, 10, mAttack, &knobBitmap));
+	pGraphics->AttachControl(ampAdsrKnobs[E_Att]);
 	// Decay knob:
+	ampAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, 10, mDecay, &knobBitmap);
 	GetParam(mDecay)->InitDouble("Decay", 0.5, 0.01, 15.0, 0.001);
 	GetParam(mDecay)->SetShape(3);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 383, 10, mDecay, &knobBitmap));
+	pGraphics->AttachControl(ampAdsrKnobs[E_Dec]);
 	// Sustain knob:
+	ampAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, 10, mSustain, &knobBitmap);
 	GetParam(mSustain)->InitDouble("Sustain", 0.1, 0.001, 1.0, 0.001);
 	GetParam(mSustain)->SetShape(2);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 437, 10, mSustain, &knobBitmap));
+	pGraphics->AttachControl(ampAdsrKnobs[E_Sus]);
 	// Release knob:
+	ampAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, 10, mRelease, &knobBitmap);
 	GetParam(mRelease)->InitDouble("Release", 1.0, 0.001, 15.0, 0.001);
 	GetParam(mRelease)->SetShape(3);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 491, 10, mRelease, &knobBitmap));
+	pGraphics->AttachControl(ampAdsrKnobs[E_Rel]);
 
 	//ADSR Visualization
-	pGraphics->AttachControl(new ADSRVisualizationControl(this, IRECT(546, 15, 648, 59)));
+	ampAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 15, 648, 63));
+	pGraphics->AttachControl(ampAdsrVisualization);
 
 	AttachGraphics(pGraphics);
 
@@ -125,6 +138,9 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mSustain:
 	case mRelease:
 		mEnvelopeGenerator.setStageValue(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx), GetParam(paramIdx)->Value());
+		ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
+			ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
+		//ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue, ampAdsrKnobs[E_Dec]->GetValue, ampAdsrKnobs[E_Sus]->GetValue, ampAdsrKnobs[E_Rel]->GetValue);
 		break;
 	}
 }

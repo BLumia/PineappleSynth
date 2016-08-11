@@ -5,6 +5,7 @@
 #include "Oscillator.h"
 #include "MIDIReceiver.h"
 #include "EnvelopeGenerator.h"
+#include "ADSRVisualizationControl.h"
 
 class Synthesis : public IPlug
 {
@@ -32,6 +33,8 @@ private:
 	MIDIReceiver mMIDIReceiver;
 	IControl* mVirtualKeyboard;
 	EnvelopeGenerator mEnvelopeGenerator;
+	IKnobMultiControl* ampAdsrKnobs[4];
+	ADSRVisualizationControl* ampAdsrVisualization;
 	void processVirtualKeyboard();
 	inline void onNoteOn(const int noteNumber, const int velocity) { mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK); };
 	inline void onNoteOff(const int noteNumber, const int velocity) { mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE); };
