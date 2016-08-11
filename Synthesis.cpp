@@ -2,6 +2,7 @@
 #include "IPlug_include_in_plug_src.h"
 #include "IControl.h"
 #include "IKeyboardControl.h"
+#include "ADSRVisualizationControl.h"
 #include "resource.h"
 
 const int kNumPrograms = 5;
@@ -65,6 +66,9 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	GetParam(mRelease)->InitDouble("Release", 1.0, 0.001, 15.0, 0.001);
 	GetParam(mRelease)->SetShape(3);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 491, 10, mRelease, &knobBitmap));
+
+	//ADSR Visualization
+	pGraphics->AttachControl(new ADSRVisualizationControl(this, IRECT(546, 15, 648, 59)));
 
 	AttachGraphics(pGraphics);
 

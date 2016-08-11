@@ -15,6 +15,7 @@
 *.xcworkspace
 *.xcuserdata
 *.xcschememanagement.plist
+*.opendb
 build-*
 ipch/*
 gui/*
