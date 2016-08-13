@@ -22,6 +22,14 @@ enum EParams
 	mDecay,
 	mSustain,
 	mRelease,
+	mFilterMode,
+	mFilterCutoff,
+	mFilterResonance,
+	mFilterAttack,
+	mFilterDecay,
+	mFilterSustain,
+	mFilterRelease,
+	mFilterEnvelopeAmount,
 	kNumParams
 };
 
@@ -30,7 +38,7 @@ enum ELayout
 	kWidth = GUI_WIDTH,
 	kHeight = GUI_HEIGHT,
 	kKeybX = 12,
-	kKeybY = 76
+	kKeybY = 154
 };
 
 Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
@@ -54,34 +62,51 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	GetParam(mWaveform)->InitEnum("Waveform", OSCILLATOR_MODE_SINE, kNumOscillatorModes);
 	GetParam(mWaveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
-	pGraphics->AttachControl(new ISwitchControl(this, 40, 20, mWaveform, &waveformBitmap));
+	pGraphics->AttachControl(new ISwitchControl(this, 42, 20, mWaveform, &waveformBitmap));
 
 	// Knob bitmap for ADSR
-	IBitmap knobBitmap = pGraphics->LoadIBitmap(KNOB_ID, KNOB_FN, 31);
+	IBitmap greenKnobBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_ID, GREEN_KNOB_FN, 31);
+	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
+
 	// Attack knob:
-	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 10, mAttack, &knobBitmap);
+	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 10, mAttack, &greenKnobBitmap);
 	GetParam(mAttack)->InitDouble("Attack", 0.01, 0.01, 10.0, 0.001);
 	GetParam(mAttack)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Att]);
 	// Decay knob:
-	ampAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, 10, mDecay, &knobBitmap);
+	ampAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, 10, mDecay, &greenKnobBitmap);
 	GetParam(mDecay)->InitDouble("Decay", 0.5, 0.01, 15.0, 0.001);
 	GetParam(mDecay)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Dec]);
 	// Sustain knob:
-	ampAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, 10, mSustain, &knobBitmap);
+	ampAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, 10, mSustain, &greenKnobBitmap);
 	GetParam(mSustain)->InitDouble("Sustain", 0.1, 0.001, 1.0, 0.001);
 	GetParam(mSustain)->SetShape(2);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Sus]);
 	// Release knob:
-	ampAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, 10, mRelease, &knobBitmap);
+	ampAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, 10, mRelease, &greenKnobBitmap);
 	GetParam(mRelease)->InitDouble("Release", 1.0, 0.001, 15.0, 0.001);
 	GetParam(mRelease)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Rel]);
 
-	//ADSR Visualization
+	// ADSR Visualization
 	ampAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 15, 648, 63));
 	pGraphics->AttachControl(ampAdsrVisualization);
+
+	// Filter switch
+	GetParam(mWaveform)->InitEnum("Filter Mode", Filter::FILTER_MODE_LOWPASS, Filter::kNumFilterModes);
+	GetParam(mWaveform)->SetDisplayText(0, "LP"); // Needed for VST3, thanks plunntic
+	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
+	pGraphics->AttachControl(new ISwitchControl(this, 42, 95, mWaveform, &waveformBitmap));
+
+	// Filter options
+	// Cutoff knob:
+	GetParam(mFilterCutoff)->InitDouble("Cutoff", 0.99, 0.01, 0.99, 0.001);
+	GetParam(mFilterCutoff)->SetShape(2);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 137, 82, mFilterCutoff, &blueKnobBitmap));
+	// Resonance knob:
+	GetParam(mFilterResonance)->InitDouble("Resonance", 0.01, 0.01, 1.0, 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 195, 82, mFilterResonance, &blueKnobBitmap));
 
 	AttachGraphics(pGraphics);
 
@@ -103,12 +128,12 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 	double *rightOutput = outputs[1];
 
 	processVirtualKeyboard();
-
 	for (int i = 0; i < nFrames; ++i) {
 		mMIDIReceiver.advance();
 		int velocity = mMIDIReceiver.getLastVelocity();
 		mOscillator.setFrequency(mMIDIReceiver.getLastFrequency());
-		leftOutput[i] = rightOutput[i] = mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0;
+		//leftOutput[i] = rightOutput[i] = mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0;
+		leftOutput[i] = rightOutput[i] = mFilter.process(mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0);
 	}
 
 	mMIDIReceiver.Flush(nFrames);
@@ -141,6 +166,15 @@ void Synthesis::OnParamChange(int paramIdx)
 		ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
 			ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
 		//ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue, ampAdsrKnobs[E_Dec]->GetValue, ampAdsrKnobs[E_Sus]->GetValue, ampAdsrKnobs[E_Rel]->GetValue);
+		break;
+	case mFilterCutoff:
+		mFilter.setCutoff(GetParam(paramIdx)->Value());
+		break;
+	case mFilterResonance:
+		mFilter.setResonance(GetParam(paramIdx)->Value());
+		break;
+	case mFilterMode:
+		mFilter.setFilterMode(static_cast<Filter::FilterMode>(GetParam(paramIdx)->Int()));
 		break;
 	}
 }

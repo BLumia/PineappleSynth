@@ -63,17 +63,21 @@ instrument determined by PLUG _IS _INST
 #define BG_ID         101
 #define PIANO_KEY_ID  102
 #define WAVEFORM_ID   103
-#define KNOB_ID       104
+#define GREEN_KNOB_ID 104
+#define BLUE_KNOB_ID  105
+#define FILTERMODE_ID 106
 
 // Image resource locations for this plug.
 #define BG_FN         "resources/img/bg.png"
 #define PIANO_KEY_FN  "resources/img/key.png"
 #define WAVEFORM_FN   "resources/img/waveform.png"
-#define KNOB_FN       "resources/img/knob.png"
+#define GREEN_KNOB_FN "resources/img/greenknob.png"
+#define BLUE_KNOB_FN  "resources/img/blueknob.png"
+#define FILTERMODE_FN "resources/img/filtermode.png"
 
 // GUI default dimensions
 #define GUI_WIDTH 665
-#define GUI_HEIGHT 100
+#define GUI_HEIGHT 180
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones
 #if defined(SA_API) && !defined(OS_IOS)

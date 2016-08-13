@@ -6,6 +6,7 @@
 #include "MIDIReceiver.h"
 #include "EnvelopeGenerator.h"
 #include "ADSRVisualizationControl.h"
+#include "Filter.h"
 
 class Synthesis : public IPlug
 {
@@ -29,6 +30,7 @@ public:
 private:
 	double mFrequency;
 	void CreatePresets();
+	Filter mFilter;
 	Oscillator mOscillator;
 	MIDIReceiver mMIDIReceiver;
 	IControl* mVirtualKeyboard;
