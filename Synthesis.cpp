@@ -96,8 +96,8 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(ampAdsrVisualization);
 
 	// Filter switch
-	GetParam(mWaveform)->InitEnum("Filter Mode", Filter::FILTER_MODE_LOWPASS, Filter::kNumFilterModes);
-	GetParam(mWaveform)->SetDisplayText(0, "LP"); // Needed for VST3, thanks plunntic
+	GetParam(mFilterMode)->InitEnum("Filter Mode", Filter::FILTER_MODE_LOWPASS, Filter::kNumFilterModes);
+	GetParam(mFilterMode)->SetDisplayText(0, "LP"); // Needed for VST3, thanks plunntic
 	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
 	pGraphics->AttachControl(new ISwitchControl(this, 42, 95, mFilterMode, &filtermodeBitmap));
 
