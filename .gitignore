@@ -24,3 +24,5 @@ gui/*
 
 Icon?
 .DS_Stor*
+
+!savihost.*
