@@ -162,8 +162,8 @@
       <ModuleDefinitionFile>$(WDL_PATH)\IPlug\IPlugVST3.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo Post-Build: copy 32bit binary to 32bit VST3 Plugins folder ... ...
-copy /y "$(TargetPath)" "$(VST3_32_PATH)\Synthesis.vst3"</Command>
+      <Command>
+copy /y "$(SolutionDir)savihost.vst3.x86.exe" "$(TargetDir)$(TargetName).exe"</Command>
       <Message>Copy VST3 Binary to VST3 Plugins folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -209,8 +209,8 @@ if exist "%programfiles(x86)%" (copy /y "$(TargetPath)" "$(VST3_64_PATH)\Synthes
       <ModuleDefinitionFile>$(WDL_PATH)\IPlug\IPlugVST3.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo Post-Build: copy 32bit binary to 32bit VST3 Plugins folder ... ...
-copy /y "$(TargetPath)" "$(VST3_32_PATH)\Synthesis.vst3"</Command>
+      <Command>
+copy /y "$(SolutionDir)savihost.vst3.x86.exe" "$(TargetDir)$(TargetName).exe"</Command>
       <Message>Copy VST3 Binary to VST3 Plugins folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -260,8 +260,8 @@ if exist "%programfiles(x86)%" (copy /y "$(TargetPath)" "$(VST3_64_PATH)\Synthes
       <ModuleDefinitionFile>$(WDL_PATH)\IPlug\IPlugVST3.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo Post-Build: copy 32bit binary to 32bit VST3 Plugins folder ... ...
-copy /y "$(TargetPath)" "$(VST3_32_PATH)\Synthesis.vst3"</Command>
+      <Command>
+copy /y "$(SolutionDir)savihost.vst3.x86.exe" "$(TargetDir)$(TargetName).exe"</Command>
       <Message>Copy VST3 Binary to VST3 Plugins folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
