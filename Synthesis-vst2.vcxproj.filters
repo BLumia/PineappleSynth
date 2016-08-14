@@ -9,6 +9,7 @@
     <ClCompile Include="MIDIReceiver.cpp" />
     <ClCompile Include="Oscillator.cpp" />
     <ClCompile Include="ADSRVisualizationControl.cpp" />
+    <ClCompile Include="Filter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Synthesis.h" />
@@ -22,6 +23,7 @@
     <ClInclude Include="MIDIReceiver.h" />
     <ClInclude Include="Oscillator.h" />
     <ClInclude Include="ADSRVisualizationControl.h" />
+    <ClInclude Include="Filter.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Synthesis.rc" />
