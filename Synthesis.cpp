@@ -43,7 +43,8 @@ enum ELayout
 
 Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	: IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo),
-	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1) {
+	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1),
+	filterEnvelopeAmount(0.0) {
 
 	TRACE;
 
@@ -97,7 +98,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	GetParam(mWaveform)->InitEnum("Filter Mode", Filter::FILTER_MODE_LOWPASS, Filter::kNumFilterModes);
 	GetParam(mWaveform)->SetDisplayText(0, "LP"); // Needed for VST3, thanks plunntic
 	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
-	pGraphics->AttachControl(new ISwitchControl(this, 42, 95, mWaveform, &waveformBitmap));
+	pGraphics->AttachControl(new ISwitchControl(this, 42, 95, mFilterMode, &filtermodeBitmap));
 
 	// Filter options
 	// Cutoff knob:
@@ -107,6 +108,30 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	// Resonance knob:
 	GetParam(mFilterResonance)->InitDouble("Resonance", 0.01, 0.01, 1.0, 0.001);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 195, 82, mFilterResonance, &blueKnobBitmap));
+	// Filter envelope amount knob:
+	GetParam(mFilterEnvelopeAmount)->InitDouble("Filter Env Amount", 0.0, -1.0, 1.0, 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 255, 82, mFilterEnvelopeAmount, &blueKnobBitmap));
+
+	// Attack knob:
+	filterAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 82, mFilterAttack, &blueKnobBitmap);
+	GetParam(mFilterAttack)->InitDouble("Filter Env Attack", 0.01, 0.01, 10.0, 0.001);
+	GetParam(mFilterAttack)->SetShape(3);
+	pGraphics->AttachControl(filterAdsrKnobs[E_Att]);
+	// Decay knob:
+	filterAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, 82, mFilterDecay, &blueKnobBitmap);
+	GetParam(mFilterDecay)->InitDouble("Filter Env Decay", 0.5, 0.01, 15.0, 0.001);
+	GetParam(mFilterDecay)->SetShape(3);
+	pGraphics->AttachControl(filterAdsrKnobs[E_Dec]);
+	// Sustain knob:
+	filterAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, 82, mFilterSustain, &blueKnobBitmap);
+	GetParam(mFilterSustain)->InitDouble("Filter Env Sustain", 0.1, 0.001, 1.0, 0.001);
+	GetParam(mFilterSustain)->SetShape(2);
+	pGraphics->AttachControl(filterAdsrKnobs[E_Sus]);
+	// Release knob:
+	filterAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, 82, mFilterRelease, &blueKnobBitmap);
+	GetParam(mFilterRelease)->InitDouble("Filter Env Release", 1.0, 0.001, 15.0, 0.001);
+	GetParam(mFilterRelease)->SetShape(3);
+	pGraphics->AttachControl(filterAdsrKnobs[E_Rel]);
 
 	AttachGraphics(pGraphics);
 
@@ -132,6 +157,7 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 		mMIDIReceiver.advance();
 		int velocity = mMIDIReceiver.getLastVelocity();
 		mOscillator.setFrequency(mMIDIReceiver.getLastFrequency());
+		mFilter.setCutoffMod(mFilterEnvelopeGenerator.nextSample() * filterEnvelopeAmount);
 		//leftOutput[i] = rightOutput[i] = mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0;
 		leftOutput[i] = rightOutput[i] = mFilter.process(mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0);
 	}
@@ -149,6 +175,7 @@ void Synthesis::Reset()
 	IMutexLock lock(this);
 	mOscillator.setSampleRate(GetSampleRate());
 	mEnvelopeGenerator.setSampleRate(GetSampleRate());
+	mFilterEnvelopeGenerator.setSampleRate(GetSampleRate());
 }
 
 void Synthesis::OnParamChange(int paramIdx)
@@ -175,6 +202,21 @@ void Synthesis::OnParamChange(int paramIdx)
 		break;
 	case mFilterMode:
 		mFilter.setFilterMode(static_cast<Filter::FilterMode>(GetParam(paramIdx)->Int()));
+		break;
+	case mFilterAttack:
+		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK, GetParam(paramIdx)->Value());
+		break;
+	case mFilterDecay:
+		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_DECAY, GetParam(paramIdx)->Value());
+		break;
+	case mFilterSustain:
+		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_SUSTAIN, GetParam(paramIdx)->Value());
+		break;
+	case mFilterRelease:
+		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE, GetParam(paramIdx)->Value());
+		break;
+	case mFilterEnvelopeAmount:
+		filterEnvelopeAmount = GetParam(paramIdx)->Value();
 		break;
 	}
 }
