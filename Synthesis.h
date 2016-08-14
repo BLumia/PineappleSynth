@@ -40,6 +40,7 @@ private:
 	IKnobMultiControl* filterAdsrKnobs[4];
 	double filterEnvelopeAmount;
 	ADSRVisualizationControl* ampAdsrVisualization;
+	ADSRVisualizationControl* filterEnvAdsrVisualization;
 	void processVirtualKeyboard();
 	inline void onNoteOn(const int noteNumber, const int velocity) {
 		mEnvelopeGenerator.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);

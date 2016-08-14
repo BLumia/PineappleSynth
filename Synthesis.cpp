@@ -68,6 +68,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	// Knob bitmap for ADSR
 	IBitmap greenKnobBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_ID, GREEN_KNOB_FN, 31);
 	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
+	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31);
 
 	// Attack knob:
 	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 10, mAttack, &greenKnobBitmap);
@@ -110,7 +111,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(new IKnobMultiControl(this, 195, 82, mFilterResonance, &blueKnobBitmap));
 	// Filter envelope amount knob:
 	GetParam(mFilterEnvelopeAmount)->InitDouble("Filter Env Amount", 0.0, -1.0, 1.0, 0.001);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 255, 82, mFilterEnvelopeAmount, &blueKnobBitmap));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 255, 82, mFilterEnvelopeAmount, &blueKnobCenterBitmap));
 
 	// Attack knob:
 	filterAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 82, mFilterAttack, &blueKnobBitmap);
@@ -132,6 +133,10 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	GetParam(mFilterRelease)->InitDouble("Filter Env Release", 1.0, 0.001, 15.0, 0.001);
 	GetParam(mFilterRelease)->SetShape(3);
 	pGraphics->AttachControl(filterAdsrKnobs[E_Rel]);
+
+	// Filter ADSR Visualization
+	filterEnvAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 87, 648, 135));
+	pGraphics->AttachControl(filterEnvAdsrVisualization);
 
 	AttachGraphics(pGraphics);
 
@@ -205,15 +210,23 @@ void Synthesis::OnParamChange(int paramIdx)
 		break;
 	case mFilterAttack:
 		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK, GetParam(paramIdx)->Value());
+		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
+			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;
 	case mFilterDecay:
 		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_DECAY, GetParam(paramIdx)->Value());
+		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
+			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;
 	case mFilterSustain:
 		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_SUSTAIN, GetParam(paramIdx)->Value());
+		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
+			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;
 	case mFilterRelease:
 		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE, GetParam(paramIdx)->Value());
+		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
+			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;
 	case mFilterEnvelopeAmount:
 		filterEnvelopeAmount = GetParam(paramIdx)->Value();

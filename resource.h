@@ -66,6 +66,7 @@ instrument determined by PLUG _IS _INST
 #define GREEN_KNOB_ID 104
 #define BLUE_KNOB_ID  105
 #define FILTERMODE_ID 106
+#define BLUE_KNOB_CENTER_ID 107
 
 // Image resource locations for this plug.
 #define BG_FN         "resources/img/bg.png"
@@ -73,6 +74,7 @@ instrument determined by PLUG _IS _INST
 #define WAVEFORM_FN   "resources/img/waveform.png"
 #define GREEN_KNOB_FN "resources/img/greenknob.png"
 #define BLUE_KNOB_FN  "resources/img/blueknob.png"
+#define BLUE_KNOB_CENTER_FN  "resources/img/blueknob-center0.png"
 #define FILTERMODE_FN "resources/img/filtermode.png"
 
 // GUI default dimensions
