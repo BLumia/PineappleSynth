@@ -30,6 +30,8 @@ public:
 private:
 	double mFrequency;
 	void CreatePresets();
+	Oscillator mLFO;
+	double lfoFilterModAmount;
 	Filter mFilter;
 	Oscillator mOscillator;
 	MIDIReceiver mMIDIReceiver;
