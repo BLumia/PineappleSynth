@@ -46,6 +46,8 @@
     <ClCompile Include="EnvelopeGenerator.cpp" />
     <ClCompile Include="ADSRVisualizationControl.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="Voice.cpp" />
+    <ClCompile Include="VoiceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Synthesis.h" />
@@ -153,6 +155,8 @@
     <ClInclude Include="Delegate.h" />
     <ClInclude Include="ADSRVisualizationControl.h" />
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="Voice.h" />
+    <ClInclude Include="VoiceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="vst3">

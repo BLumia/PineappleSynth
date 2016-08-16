@@ -2,7 +2,6 @@
 #include "IPlug_include_in_plug_src.h"
 #include "IControl.h"
 #include "IKeyboardControl.h"
-#include "ADSRVisualizationControl.h"
 #include "resource.h"
 
 const int kNumPrograms = 5;
@@ -43,8 +42,7 @@ enum ELayout
 
 Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	: IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo),
-	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1),
-	filterEnvelopeAmount(0.0), lfoFilterModAmount(0.1) {
+	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1) {
 
 	TRACE;
 
@@ -142,14 +140,9 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	CreatePresets();
 
-	mMIDIReceiver.noteOn.Connect(this, &Synthesis::onNoteOn);
-	mMIDIReceiver.noteOff.Connect(this, &Synthesis::onNoteOff);
-	mEnvelopeGenerator.beganEnvelopeCycle.Connect(this, &Synthesis::onBeganEnvelopeCycle);
-	mEnvelopeGenerator.finishedEnvelopeCycle.Connect(this, &Synthesis::onFinishedEnvelopeCycle);
+	mMIDIReceiver.noteOn.Connect(&voiceManager, &VoiceManager::onNoteOn);
+	mMIDIReceiver.noteOff.Connect(&voiceManager, &VoiceManager::onNoteOff);
 
-	mLFO.setMode(OSCILLATOR_MODE_TRIANGLE);
-	mLFO.setFrequency(6.0);
-	mLFO.setMuted(false);
 }
 
 Synthesis::~Synthesis() {}
@@ -164,12 +157,8 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 	processVirtualKeyboard();
 	for (int i = 0; i < nFrames; ++i) {
 		mMIDIReceiver.advance();
-		int velocity = mMIDIReceiver.getLastVelocity();
-		double lfoFilterModulation = mLFO.nextSample() * lfoFilterModAmount;
-		mOscillator.setFrequency(mMIDIReceiver.getLastFrequency());
-		mFilter.setCutoffMod((mFilterEnvelopeGenerator.nextSample() * filterEnvelopeAmount) + lfoFilterModulation);
-		//leftOutput[i] = rightOutput[i] = mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0;
-		leftOutput[i] = rightOutput[i] = mFilter.process(mOscillator.nextSample() * mEnvelopeGenerator.nextSample() * velocity / 127.0);
+		
+		leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
 	}
 
 	mMIDIReceiver.Flush(nFrames);
@@ -183,15 +172,12 @@ void Synthesis::Reset()
 {
 	TRACE;
 	IMutexLock lock(this);
-	mOscillator.setSampleRate(GetSampleRate());
-	mEnvelopeGenerator.setSampleRate(GetSampleRate());
-	mFilterEnvelopeGenerator.setSampleRate(GetSampleRate());
-	mLFO.setSampleRate(GetSampleRate());
+	voiceManager.setSampleRate(GetSampleRate());
 }
 
 void Synthesis::OnParamChange(int paramIdx)
 {
-	IMutexLock lock(this);
+	IMutexLock lock(this);/*
 	switch (paramIdx) {
 	case mWaveform:
 		mOscillator.setMode(static_cast<OscillatorMode>(GetParam(mWaveform)->Int()));
@@ -237,7 +223,7 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mFilterEnvelopeAmount:
 		filterEnvelopeAmount = GetParam(paramIdx)->Value();
 		break;
-	}
+	}*/
 }
 
 void Synthesis::ProcessMidiMsg(IMidiMsg* pMsg) {

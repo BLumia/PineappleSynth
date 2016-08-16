@@ -1,5 +1,7 @@
 #include "Oscillator.h"
 
+double Oscillator::mSampleRate = 44100.0;
+
 //Setters
 void Oscillator::setMode(OscillatorMode mode) {
 	mOscillatorMode = mode;
@@ -70,7 +72,6 @@ void Oscillator::generate(double* buffer, int nFrames) {
 */
 double Oscillator::nextSample() {
 	double value = 0.0;
-	if (isMuted) return value;
 
 	switch (mOscillatorMode) {
 	case OSCILLATOR_MODE_SINE:

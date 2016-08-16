@@ -22,24 +22,13 @@ void MIDIReceiver::advance() {
 			if (mKeyStatus[noteNumber] == false) {
 				mKeyStatus[noteNumber] = true;
 				mNumKeys += 1;
-			}
-			// A key pressed later overrides any previously pressed key:
-			if (noteNumber != mLastNoteNumber) {
-				mLastNoteNumber = noteNumber;
-				mLastFrequency = noteNumberToFrequency(mLastNoteNumber);
-				mLastVelocity = velocity;
-				// Emit a "note on" signal:
 				noteOn(noteNumber, velocity);
 			}
 		} else {
 			if (mKeyStatus[noteNumber] == true) {
 				mKeyStatus[noteNumber] = false;
 				mNumKeys -= 1;
-			}
-			// If the last note was released, nothing should play:
-			if (noteNumber == mLastNoteNumber) {
-				mLastNoteNumber = -1;
-				noteOff(noteNumber, mLastVelocity);
+				noteOff(noteNumber, velocity);
 			}
 		}
 		mMidiQueue.Remove();

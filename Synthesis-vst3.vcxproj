@@ -332,6 +332,8 @@ if exist "%programfiles(x86)%" (copy /y "$(TargetPath)" "$(VST3_64_PATH)\Synthes
     <ClInclude Include="Oscillator.h" />
     <ClInclude Include="Synthesis.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Voice.h" />
+    <ClInclude Include="VoiceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\VST3_SDK\pluginterfaces\base\funknown.cpp" />
@@ -353,6 +355,8 @@ if exist "%programfiles(x86)%" (copy /y "$(TargetPath)" "$(VST3_64_PATH)\Synthes
     <ClCompile Include="MIDIReceiver.cpp" />
     <ClCompile Include="Oscillator.cpp" />
     <ClCompile Include="Synthesis.cpp" />
+    <ClCompile Include="Voice.cpp" />
+    <ClCompile Include="VoiceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Synthesis.rc" />
