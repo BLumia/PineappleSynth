@@ -58,7 +58,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(mVirtualKeyboard);
 
 	// Waveform switch
-	GetParam(mWaveform)->InitEnum("Waveform", OSCILLATOR_MODE_SINE, kNumOscillatorModes);
+	GetParam(mWaveform)->InitEnum("Waveform", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
 	GetParam(mWaveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
 	pGraphics->AttachControl(new ISwitchControl(this, 42, 20, mWaveform, &waveformBitmap));
@@ -133,7 +133,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(filterAdsrKnobs[E_Rel]);
 
 	// Filter ADSR Visualization
-	filterEnvAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 87, 648, 135));
+	filterEnvAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 88, 648, 136));
 	pGraphics->AttachControl(filterEnvAdsrVisualization);
 
 	AttachGraphics(pGraphics);
@@ -177,53 +177,41 @@ void Synthesis::Reset()
 
 void Synthesis::OnParamChange(int paramIdx)
 {
-	IMutexLock lock(this);/*
+	IMutexLock lock(this);
 	switch (paramIdx) {
 	case mWaveform:
-		mOscillator.setMode(static_cast<OscillatorMode>(GetParam(mWaveform)->Int()));
+		voiceManager.setOscillatorModeForEachVoice(static_cast<Oscillator::OscillatorMode>(GetParam(mWaveform)->Int()));
 		break;
 	case mAttack:
 	case mDecay:
 	case mSustain:
 	case mRelease:
-		mEnvelopeGenerator.setStageValue(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx), GetParam(paramIdx)->Value());
+		voiceManager.setAmpEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx), GetParam(paramIdx)->Value());
 		ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
 			ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
 		//ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue, ampAdsrKnobs[E_Dec]->GetValue, ampAdsrKnobs[E_Sus]->GetValue, ampAdsrKnobs[E_Rel]->GetValue);
 		break;
 	case mFilterCutoff:
-		mFilter.setCutoff(GetParam(paramIdx)->Value());
+		voiceManager.setFilterCutoffForEachVoice(GetParam(paramIdx)->Value());
 		break;
 	case mFilterResonance:
-		mFilter.setResonance(GetParam(paramIdx)->Value());
+		voiceManager.setFilterResonanceForEachVoice(GetParam(paramIdx)->Value());
 		break;
 	case mFilterMode:
-		mFilter.setFilterMode(static_cast<Filter::FilterMode>(GetParam(paramIdx)->Int()));
+		voiceManager.setFilterModeForEachVoice(static_cast<Filter::FilterMode>(GetParam(paramIdx)->Int()));
 		break;
 	case mFilterAttack:
-		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK, GetParam(paramIdx)->Value());
-		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
-			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
-		break;
 	case mFilterDecay:
-		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_DECAY, GetParam(paramIdx)->Value());
-		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
-			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
-		break;
 	case mFilterSustain:
-		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_SUSTAIN, GetParam(paramIdx)->Value());
-		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
-			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
-		break;
 	case mFilterRelease:
-		mFilterEnvelopeGenerator.setStageValue(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE, GetParam(paramIdx)->Value());
+		voiceManager.setFilterEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - 7), GetParam(paramIdx)->Value());
 		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
 			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;
 	case mFilterEnvelopeAmount:
-		filterEnvelopeAmount = GetParam(paramIdx)->Value();
+		voiceManager.setFilterAmountForEachVoice(GetParam(paramIdx)->Value());
 		break;
-	}*/
+	}
 }
 
 void Synthesis::ProcessMidiMsg(IMidiMsg* pMsg) {

@@ -43,3 +43,46 @@ double VoiceManager::nextSample() {
 	}
 	return output;
 }
+
+// Setting attributes
+void VoiceManager::setFilterCutoffForEachVoice(double newCutoff) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mFilter.setCutoff(newCutoff);
+	}
+}
+
+void VoiceManager::setFilterResonanceForEachVoice(double newResonance) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mFilter.setResonance(newResonance);
+	}
+}
+
+void VoiceManager::setOscillatorModeForEachVoice(Oscillator::OscillatorMode mode) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mOscillator.setMode(mode);
+	}
+}
+
+void VoiceManager::setFilterModeForEachVoice(Filter::FilterMode mode) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mFilter.setFilterMode(mode);
+	}
+}
+
+void VoiceManager::setAmpEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mAmpEnvelope.setStageValue(stage, value);
+	}
+}
+
+void VoiceManager::setFilterEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mFilterEnvelope.setStageValue(stage, value);
+	}
+}
+
+void VoiceManager::setFilterAmountForEachVoice(double amount) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mFilterEnvelopeAmount = amount;
+	}
+}

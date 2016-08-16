@@ -18,5 +18,12 @@ public:
 			voice.mOscillator.setSampleRate(sampleRate);
 		}
 	}
+	void setOscillatorModeForEachVoice(Oscillator::OscillatorMode mode);
+	void setFilterModeForEachVoice(Filter::FilterMode mode);
+	void setFilterCutoffForEachVoice(double newCutoff);
+	void setFilterResonanceForEachVoice(double newResonance);
+	void setAmpEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value);
+	void setFilterEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value);
+	void setFilterAmountForEachVoice(double amount);
 };
 
