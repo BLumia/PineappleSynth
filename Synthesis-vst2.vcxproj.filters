@@ -10,6 +10,8 @@
     <ClCompile Include="Oscillator.cpp" />
     <ClCompile Include="ADSRVisualizationControl.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="Voice.cpp" />
+    <ClCompile Include="VoiceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Synthesis.h" />
@@ -24,6 +26,8 @@
     <ClInclude Include="Oscillator.h" />
     <ClInclude Include="ADSRVisualizationControl.h" />
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="Voice.h" />
+    <ClInclude Include="VoiceManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Synthesis.rc" />

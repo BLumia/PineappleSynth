@@ -242,11 +242,27 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../WDL/zlib/zutil.h" />
+		<Unit filename="ADSRVisualizationControl.cpp" />
+		<Unit filename="ADSRVisualizationControl.h" />
+		<Unit filename="Delegate.h" />
+		<Unit filename="EnvelopeGenerator.cpp" />
+		<Unit filename="EnvelopeGenerator.h" />
+		<Unit filename="Filter.cpp" />
+		<Unit filename="Filter.h" />
+		<Unit filename="GallantSignal.h" />
+		<Unit filename="MIDIReceiver.cpp" />
+		<Unit filename="MIDIReceiver.h" />
+		<Unit filename="Oscillator.cpp" />
+		<Unit filename="Oscillator.h" />
 		<Unit filename="Synthesis.cpp" />
 		<Unit filename="Synthesis.h" />
 		<Unit filename="Synthesis.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="Voice.cpp" />
+		<Unit filename="Voice.h" />
+		<Unit filename="VoiceManager.cpp" />
+		<Unit filename="VoiceManager.h" />
 		<Unit filename="resource.h" />
 		<Extensions>
 			<code_completion />
