@@ -67,6 +67,7 @@ instrument determined by PLUG _IS _INST
 #define BLUE_KNOB_ID  105
 #define FILTERMODE_ID 106
 #define BLUE_KNOB_CENTER_ID 107
+#define ORANGE_KNOB_ID 108
 
 // Image resource locations for this plug.
 #define BG_FN         "resources/img/bg.png"
@@ -76,10 +77,11 @@ instrument determined by PLUG _IS _INST
 #define BLUE_KNOB_FN  "resources/img/blueknob.png"
 #define BLUE_KNOB_CENTER_FN  "resources/img/blueknob-center0.png"
 #define FILTERMODE_FN "resources/img/filtermode.png"
+#define ORANGE_KNOB_FN "resources/img/orangeknob.png"
 
 // GUI default dimensions
 #define GUI_WIDTH 665
-#define GUI_HEIGHT 180
+#define GUI_HEIGHT 253
 
 // on MSVC, you must define SA_API in the resource editor preprocessor macros as well as the c++ ones
 #if defined(SA_API) && !defined(OS_IOS)

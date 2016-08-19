@@ -37,7 +37,11 @@ enum ELayout
 	kWidth = GUI_WIDTH,
 	kHeight = GUI_HEIGHT,
 	kKeybX = 12,
-	kKeybY = 154
+	kKeybY = 226,
+	kGreenRow = 10,
+	kOrangeRow = 80,
+	kBlueRow = 150,
+	kSwitcherTopPadding = 10,
 };
 
 Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
@@ -61,79 +65,80 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	GetParam(mWaveform)->InitEnum("Waveform", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
 	GetParam(mWaveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
-	pGraphics->AttachControl(new ISwitchControl(this, 42, 20, mWaveform, &waveformBitmap));
+	pGraphics->AttachControl(new ISwitchControl(this, 42, kGreenRow + kSwitcherTopPadding, mWaveform, &waveformBitmap));
 
 	// Knob bitmap for ADSR
 	IBitmap greenKnobBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_ID, GREEN_KNOB_FN, 31);
 	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
-	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31);
+	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31); 
+	IBitmap orangeKnobBitmap = pGraphics->LoadIBitmap(ORANGE_KNOB_ID, ORANGE_KNOB_FN, 31);
 
 	// Attack knob:
-	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 10, mAttack, &greenKnobBitmap);
+	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, kOrangeRow, mAttack, &orangeKnobBitmap);
 	GetParam(mAttack)->InitDouble("Attack", 0.01, 0.01, 10.0, 0.001);
 	GetParam(mAttack)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Att]);
 	// Decay knob:
-	ampAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, 10, mDecay, &greenKnobBitmap);
+	ampAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, kOrangeRow, mDecay, &orangeKnobBitmap);
 	GetParam(mDecay)->InitDouble("Decay", 0.5, 0.01, 15.0, 0.001);
 	GetParam(mDecay)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Dec]);
 	// Sustain knob:
-	ampAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, 10, mSustain, &greenKnobBitmap);
+	ampAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, kOrangeRow, mSustain, &orangeKnobBitmap);
 	GetParam(mSustain)->InitDouble("Sustain", 0.1, 0.001, 1.0, 0.001);
 	GetParam(mSustain)->SetShape(2);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Sus]);
 	// Release knob:
-	ampAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, 10, mRelease, &greenKnobBitmap);
+	ampAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, kOrangeRow, mRelease, &orangeKnobBitmap);
 	GetParam(mRelease)->InitDouble("Release", 1.0, 0.001, 15.0, 0.001);
 	GetParam(mRelease)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Rel]);
 
 	// ADSR Visualization
-	ampAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 15, 648, 63));
+	ampAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, kOrangeRow + 7, 648, kOrangeRow + 55));
 	pGraphics->AttachControl(ampAdsrVisualization);
 
 	// Filter switch
 	GetParam(mFilterMode)->InitEnum("Filter Mode", Filter::FILTER_MODE_LOWPASS, Filter::kNumFilterModes);
 	GetParam(mFilterMode)->SetDisplayText(0, "LP"); // Needed for VST3, thanks plunntic
 	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
-	pGraphics->AttachControl(new ISwitchControl(this, 42, 95, mFilterMode, &filtermodeBitmap));
+	pGraphics->AttachControl(new ISwitchControl(this, 42, kBlueRow + kSwitcherTopPadding, mFilterMode, &filtermodeBitmap));
 
 	// Filter options
 	// Cutoff knob:
 	GetParam(mFilterCutoff)->InitDouble("Cutoff", 0.99, 0.01, 0.99, 0.001);
 	GetParam(mFilterCutoff)->SetShape(2);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 137, 82, mFilterCutoff, &blueKnobBitmap));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 137, kBlueRow, mFilterCutoff, &blueKnobBitmap));
 	// Resonance knob:
 	GetParam(mFilterResonance)->InitDouble("Resonance", 0.01, 0.01, 1.0, 0.001);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 195, 82, mFilterResonance, &blueKnobBitmap));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 195, kBlueRow, mFilterResonance, &blueKnobBitmap));
 	// Filter envelope amount knob:
 	GetParam(mFilterEnvelopeAmount)->InitDouble("Filter Env Amount", 0.0, -1.0, 1.0, 0.001);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 255, 82, mFilterEnvelopeAmount, &blueKnobCenterBitmap));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 255, kBlueRow, mFilterEnvelopeAmount, &blueKnobCenterBitmap));
 
 	// Attack knob:
-	filterAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, 82, mFilterAttack, &blueKnobBitmap);
+	filterAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, kBlueRow, mFilterAttack, &blueKnobBitmap);
 	GetParam(mFilterAttack)->InitDouble("Filter Env Attack", 0.01, 0.01, 10.0, 0.001);
 	GetParam(mFilterAttack)->SetShape(3);
 	pGraphics->AttachControl(filterAdsrKnobs[E_Att]);
 	// Decay knob:
-	filterAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, 82, mFilterDecay, &blueKnobBitmap);
+	filterAdsrKnobs[E_Dec] = new IKnobMultiControl(this, 383, kBlueRow, mFilterDecay, &blueKnobBitmap);
 	GetParam(mFilterDecay)->InitDouble("Filter Env Decay", 0.5, 0.01, 15.0, 0.001);
 	GetParam(mFilterDecay)->SetShape(3);
 	pGraphics->AttachControl(filterAdsrKnobs[E_Dec]);
 	// Sustain knob:
-	filterAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, 82, mFilterSustain, &blueKnobBitmap);
+	filterAdsrKnobs[E_Sus] = new IKnobMultiControl(this, 437, kBlueRow, mFilterSustain, &blueKnobBitmap);
 	GetParam(mFilterSustain)->InitDouble("Filter Env Sustain", 0.1, 0.001, 1.0, 0.001);
 	GetParam(mFilterSustain)->SetShape(2);
 	pGraphics->AttachControl(filterAdsrKnobs[E_Sus]);
 	// Release knob:
-	filterAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, 82, mFilterRelease, &blueKnobBitmap);
+	filterAdsrKnobs[E_Rel] = new IKnobMultiControl(this, 491, kBlueRow, mFilterRelease, &blueKnobBitmap);
 	GetParam(mFilterRelease)->InitDouble("Filter Env Release", 1.0, 0.001, 15.0, 0.001);
 	GetParam(mFilterRelease)->SetShape(3);
 	pGraphics->AttachControl(filterAdsrKnobs[E_Rel]);
 
 	// Filter ADSR Visualization
-	filterEnvAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, 88, 648, 136));
+	filterEnvAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, kBlueRow + 7, 648, kBlueRow + 55));
 	pGraphics->AttachControl(filterEnvAdsrVisualization);
 
 	AttachGraphics(pGraphics);

@@ -29,7 +29,7 @@ public:
 	~ADSRVisualizationControl() {};
 	void setADSR(float att, float dec, float sus, float rel);
 
-	bool IsDirty() { return true; };
+	bool IsDirty() { return true; }; //TODO: can't do that.
 
 	bool Draw(IGraphics *pGraphics);
 };
