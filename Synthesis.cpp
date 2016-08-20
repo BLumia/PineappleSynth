@@ -65,6 +65,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	// Knob bitmap for ADSR
 	IBitmap greenKnobBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_ID, GREEN_KNOB_FN, 31);
+	IBitmap greenKnobCenterBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_CENTER_ID, GREEN_KNOB_CENTER_FN, 31);
 	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
 	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31);
 	IBitmap orangeKnobBitmap = pGraphics->LoadIBitmap(ORANGE_KNOB_ID, ORANGE_KNOB_FN, 31);
@@ -83,7 +84,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	// mOscillatorMix
 	GetParam(mOscillatorMix)->InitDouble("Osc Mix", 0.0, 0.0, 1.0, 0.001);
 	GetParam(mOscillatorMix)->SetShape(1);
-	pGraphics->AttachControl(new IKnobMultiControl(this, 275, kGreenRow, mOscillatorMix, &greenKnobBitmap));
+	pGraphics->AttachControl(new IKnobMultiControl(this, 275, kGreenRow, mOscillatorMix, &greenKnobCenterBitmap));
 
 	// Attack knob:
 	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, kOrangeRow, mAttack, &orangeKnobBitmap);
