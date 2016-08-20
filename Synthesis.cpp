@@ -16,7 +16,9 @@ enum EAdsr
 
 enum EParams
 {
-	mWaveform = 0,
+	mOsc1Waveform = 0,
+	mOsc2Waveform,
+	mOscillatorMix,
 	mAttack,
 	mDecay,
 	mSustain,
@@ -61,17 +63,27 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	pGraphics->AttachControl(mVirtualKeyboard);
 
-	// Waveform switch
-	GetParam(mWaveform)->InitEnum("Waveform", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
-	GetParam(mWaveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
-	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
-	pGraphics->AttachControl(new ISwitchControl(this, 42, kGreenRow + kSwitcherTopPadding, mWaveform, &waveformBitmap));
-
 	// Knob bitmap for ADSR
 	IBitmap greenKnobBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_ID, GREEN_KNOB_FN, 31);
 	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
-	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31); 
+	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31);
 	IBitmap orangeKnobBitmap = pGraphics->LoadIBitmap(ORANGE_KNOB_ID, ORANGE_KNOB_FN, 31);
+
+	// OSC1 Waveform switch
+	GetParam(mOsc1Waveform)->InitEnum("Waveform1", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
+	GetParam(mOsc1Waveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
+	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
+	pGraphics->AttachControl(new ISwitchControl(this, 42, kGreenRow + kSwitcherTopPadding, mOsc1Waveform, &waveformBitmap));
+
+	// OSC2 Waveform switch
+	GetParam(mOsc2Waveform)->InitEnum("Waveform2", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
+	GetParam(mOsc2Waveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
+	pGraphics->AttachControl(new ISwitchControl(this, 346, kGreenRow + kSwitcherTopPadding, mOsc2Waveform, &waveformBitmap));
+	
+	// mOscillatorMix
+	GetParam(mOscillatorMix)->InitDouble("Osc Mix", 0.0, 0.0, 1.0, 0.001);
+	GetParam(mOscillatorMix)->SetShape(1);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 275, kGreenRow, mOscillatorMix, &greenKnobBitmap));
 
 	// Attack knob:
 	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, kOrangeRow, mAttack, &orangeKnobBitmap);
@@ -184,14 +196,20 @@ void Synthesis::OnParamChange(int paramIdx)
 {
 	IMutexLock lock(this);
 	switch (paramIdx) {
-	case mWaveform:
-		voiceManager.setOscillatorModeForEachVoice(static_cast<Oscillator::OscillatorMode>(GetParam(mWaveform)->Int()));
+	case mOsc1Waveform:
+		voiceManager.setOscillatorModeForEachVoice(1, static_cast<Oscillator::OscillatorMode>(GetParam(mOsc1Waveform)->Int()));
+		break;
+	case mOsc2Waveform:
+		voiceManager.setOscillatorModeForEachVoice(2, static_cast<Oscillator::OscillatorMode>(GetParam(mOsc2Waveform)->Int()));
+		break;
+	case mOscillatorMix:
+		voiceManager.setOscillatorMixForEachVoice(GetParam(paramIdx)->Value());
 		break;
 	case mAttack:
 	case mDecay:
 	case mSustain:
 	case mRelease:
-		voiceManager.setAmpEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx), GetParam(paramIdx)->Value());
+		voiceManager.setAmpEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - 2), GetParam(paramIdx)->Value());
 		ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
 			ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
 		//ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue, ampAdsrKnobs[E_Dec]->GetValue, ampAdsrKnobs[E_Sus]->GetValue, ampAdsrKnobs[E_Rel]->GetValue);
@@ -209,7 +227,7 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mFilterDecay:
 	case mFilterSustain:
 	case mFilterRelease:
-		voiceManager.setFilterEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - 7), GetParam(paramIdx)->Value());
+		voiceManager.setFilterEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - 9), GetParam(paramIdx)->Value());
 		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
 			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;

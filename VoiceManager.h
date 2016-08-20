@@ -15,10 +15,12 @@ public:
 		EnvelopeGenerator::setSampleRate(sampleRate);
 		for (int i = 0; i < NumberOfVoices; i++) {
 			Voice& voice = voices[i];
-			voice.mOscillator.setSampleRate(sampleRate);
+			voice.mOscillator1.setSampleRate(sampleRate);
+			voice.mOscillator2.setSampleRate(sampleRate);
 		}
 	}
-	void setOscillatorModeForEachVoice(Oscillator::OscillatorMode mode);
+	void setOscillatorMixForEachVoice(double mix);
+	void setOscillatorModeForEachVoice(int oscID, Oscillator::OscillatorMode mode);
 	void setFilterModeForEachVoice(Filter::FilterMode mode);
 	void setFilterCutoffForEachVoice(double newCutoff);
 	void setFilterResonanceForEachVoice(double newResonance);

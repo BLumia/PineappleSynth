@@ -57,9 +57,22 @@ void VoiceManager::setFilterResonanceForEachVoice(double newResonance) {
 	}
 }
 
-void VoiceManager::setOscillatorModeForEachVoice(Oscillator::OscillatorMode mode) {
+void VoiceManager::setOscillatorModeForEachVoice(int oscID, Oscillator::OscillatorMode mode) {
+	if (oscID == 1) {
+		for (int i = 0; i < NumberOfVoices; i++) {
+			voices[i].mOscillator1.setMode(mode);
+		}
+	} else { // osc2
+		for (int i = 0; i < NumberOfVoices; i++) {
+			voices[i].mOscillator2.setMode(mode);
+		}
+	}
+	
+}
+
+void VoiceManager::setOscillatorMixForEachVoice(double mix) {
 	for (int i = 0; i < NumberOfVoices; i++) {
-		voices[i].mOscillator.setMode(mode);
+		voices[i].setOscillatorMix(mix);
 	}
 }
 

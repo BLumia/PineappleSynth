@@ -3,24 +3,29 @@
 double Voice::nextSample() {
 	if (!isActive) return 0.0;
 
-	double oscillatorOutput = mOscillator.nextSample();
+	double oscillator1Output = mOscillator1.nextSample();
+	double oscillator2Output = mOscillator2.nextSample();
+	double oscillatorSum = ((1 - mOscillatorMix) * oscillator1Output) + (mOscillatorMix * oscillator2Output);
 
 	double ampEnvelopeValue = mAmpEnvelope.nextSample();
 	double filterEnvelopeValue = mFilterEnvelope.nextSample();
 
 	mFilter.setCutoffMod(filterEnvelopeValue * mFilterEnvelopeAmount); // ignore LFO now.
 
-	return mFilter.process(oscillatorOutput * ampEnvelopeValue * mVelocity / 127.0);
+	return mFilter.process(oscillatorSum * ampEnvelopeValue * mVelocity / 127.0);
 }
 
 void Voice::setFree() {
 	isActive = false;
 }
 
+// Do reset after every noteoff
 void Voice::reset() {
 	mNoteNumber = -1;
 	mVelocity = 0;
-	mOscillator.reset();
+	//mOscillatorMix = 0;
+	mOscillator1.reset();
+	mOscillator2.reset();
 	mAmpEnvelope.reset();
 	mFilterEnvelope.reset();
 	mFilter.reset();
