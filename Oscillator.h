@@ -1,6 +1,8 @@
 #pragma once
 
 #include <math.h>
+#include <random>
+#include <ctime>
 
 class Oscillator {
 public:
@@ -9,6 +11,7 @@ public:
 		OSCILLATOR_MODE_SAW,
 		OSCILLATOR_MODE_SQUARE,
 		OSCILLATOR_MODE_TRIANGLE,
+		OSCILLATOR_MODE_NOISE,
 		kNumOscillatorModes
 	};
 private:
@@ -34,5 +37,6 @@ public:
 		mFrequency(440.0),
 		mPhase(0.0) {
 		updateIncrement();
+		std::srand(std::time(0));
 	};
 };

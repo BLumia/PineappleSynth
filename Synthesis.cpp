@@ -73,7 +73,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	// OSC1 Waveform switch
 	GetParam(mOsc1Waveform)->InitEnum("Waveform1", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
 	GetParam(mOsc1Waveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
-	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 4);
+	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 5);
 	pGraphics->AttachControl(new ISwitchControl(this, 42, kGreenRow + kSwitcherTopPadding, mOsc1Waveform, &waveformBitmap));
 
 	// OSC2 Waveform switch
