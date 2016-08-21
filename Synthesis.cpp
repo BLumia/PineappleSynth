@@ -17,8 +17,13 @@ enum EAdsr
 enum EParams
 {
 	mOsc1Waveform = 0,
+	mOsc1Coarse,
+	mOsc1Fine,
 	mOsc2Waveform,
+	mOsc2Coarse,
+	mOsc2Fine,
 	mOscillatorMix,
+	mAmpAmount,
 	mAttack,
 	mDecay,
 	mSustain,
@@ -76,15 +81,40 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 5);
 	pGraphics->AttachControl(new ISwitchControl(this, 42, kGreenRow + kSwitcherTopPadding, mOsc1Waveform, &waveformBitmap));
 
+	// OSC1 Coarse knob:
+	GetParam(mOsc1Coarse)->InitInt("Coarse1", 0, -24, 24);
+	GetParam(mOsc1Coarse)->SetShape(1);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 136, kGreenRow, mOsc1Coarse, &greenKnobCenterBitmap));
+
+	// OSC1 Fine knob:
+	GetParam(mOsc1Fine)->InitDouble("Fine1", 0.0, -1.0, 1.0, 0.01);
+	GetParam(mOsc1Fine)->SetShape(1);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 195, kGreenRow, mOsc1Fine, &greenKnobCenterBitmap));
+
 	// OSC2 Waveform switch
 	GetParam(mOsc2Waveform)->InitEnum("Waveform2", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
 	GetParam(mOsc2Waveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
 	pGraphics->AttachControl(new ISwitchControl(this, 346, kGreenRow + kSwitcherTopPadding, mOsc2Waveform, &waveformBitmap));
+
+	// OSC2 Coarse knob:
+	GetParam(mOsc2Coarse)->InitInt("Coarse2", 0, -24, 24);
+	GetParam(mOsc2Coarse)->SetShape(1);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 437, kGreenRow, mOsc2Coarse, &greenKnobCenterBitmap));
+
+	// OSC2 Fine knob:
+	GetParam(mOsc2Fine)->InitDouble("Fine2", 0.0, -1.0, 1.0, 0.01);
+	GetParam(mOsc2Fine)->SetShape(1);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 491, kGreenRow, mOsc2Fine, &greenKnobCenterBitmap));
 	
 	// mOscillatorMix
 	GetParam(mOscillatorMix)->InitDouble("Osc Mix", 0.0, 0.0, 1.0, 0.001);
 	GetParam(mOscillatorMix)->SetShape(1);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 275, kGreenRow, mOscillatorMix, &greenKnobCenterBitmap));
+
+	// Amp amount knob:
+	GetParam(mAmpAmount)->InitDouble("Amp Amount", 50., 0., 100.0, 0.01, "%");
+	GetParam(mAmpAmount)->SetShape(2);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 255, kOrangeRow, mAmpAmount, &orangeKnobBitmap));
 
 	// Attack knob:
 	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, kOrangeRow, mAttack, &orangeKnobBitmap);
@@ -210,7 +240,7 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mDecay:
 	case mSustain:
 	case mRelease:
-		voiceManager.setAmpEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - 2), GetParam(paramIdx)->Value());
+		voiceManager.setAmpEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - mAttack + 1), GetParam(paramIdx)->Value());
 		ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
 			ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
 		//ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue, ampAdsrKnobs[E_Dec]->GetValue, ampAdsrKnobs[E_Sus]->GetValue, ampAdsrKnobs[E_Rel]->GetValue);
@@ -228,7 +258,7 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mFilterDecay:
 	case mFilterSustain:
 	case mFilterRelease:
-		voiceManager.setFilterEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - 9), GetParam(paramIdx)->Value());
+		voiceManager.setFilterEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - mFilterAttack + 1), GetParam(paramIdx)->Value());
 		filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
 			filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 		break;
