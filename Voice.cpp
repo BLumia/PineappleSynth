@@ -10,6 +10,8 @@ double Voice::nextSample() {
 	double ampEnvelopeValue = mAmpEnvelope.nextSample();
 	double filterEnvelopeValue = mFilterEnvelope.nextSample();
 
+	oscillatorSum *= mAmpEnvelopeAmount * 0.01;
+
 	mFilter.setCutoffMod(filterEnvelopeValue * mFilterEnvelopeAmount); // ignore LFO now.
 
 	return mFilter.process(oscillatorSum * ampEnvelopeValue * mVelocity / 127.0);

@@ -236,6 +236,9 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mOscillatorMix:
 		voiceManager.setOscillatorMixForEachVoice(GetParam(paramIdx)->Value());
 		break;
+	case mAmpAmount:
+		voiceManager.setAmpAmountForEachVoice(GetParam(paramIdx)->Value());
+		break;
 	case mAttack:
 	case mDecay:
 	case mSustain:

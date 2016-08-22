@@ -20,12 +20,14 @@ private:
 	EnvelopeGenerator mFilterEnvelope;
 	// Component Attribute
 	double mFilterEnvelopeAmount;
+	double mAmpEnvelopeAmount;
 public:
 	friend class VoiceManager;
 	Voice() :
 		mNoteNumber(-1),
 		mVelocity(0),
 		mFilterEnvelopeAmount(0.0),
+		mAmpEnvelopeAmount(1.0),
 		mOscillatorMix(0.0),
 		isActive(false) {
 		// Set myself free everytime my volume envelope has fully faded out of RELEASE stage:
@@ -33,6 +35,7 @@ public:
 	}
 	// Setters
 	inline void setFilterEnvelopeAmount(double amount) { mFilterEnvelopeAmount = amount; }
+	inline void setAmpEnvelopeAmount(double amount) { mAmpEnvelopeAmount = amount; }
 	inline void setOscillatorMix(double mix) { mOscillatorMix = mix; }
 	inline void setNoteNumber(int noteNumber) {
 		mNoteNumber = noteNumber;

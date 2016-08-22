@@ -99,3 +99,9 @@ void VoiceManager::setFilterAmountForEachVoice(double amount) {
 		voices[i].mFilterEnvelopeAmount = amount;
 	}
 }
+
+void VoiceManager::setAmpAmountForEachVoice(double amount) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].mAmpEnvelopeAmount = amount;
+	}
+}

@@ -27,5 +27,6 @@ public:
 	void setAmpEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value);
 	void setFilterEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value);
 	void setFilterAmountForEachVoice(double amount);
+	void setAmpAmountForEachVoice(double amount);
 };
 
