@@ -28,5 +28,7 @@ public:
 	void setFilterEnvStageValueForEachVoice(EnvelopeGenerator::EnvelopeStage stage, double value);
 	void setFilterAmountForEachVoice(double amount);
 	void setAmpAmountForEachVoice(double amount);
+	void setSemiOffsetForEachVoice(int oscID, int semi);
+	void setCentOffsetForEachVoice(int oscID, int cent);
 };
 

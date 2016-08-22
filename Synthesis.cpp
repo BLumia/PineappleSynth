@@ -87,7 +87,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(new IKnobMultiControl(this, 136, kGreenRow, mOsc1Coarse, &greenKnobCenterBitmap));
 
 	// OSC1 Fine knob:
-	GetParam(mOsc1Fine)->InitDouble("Fine1", 0.0, -1.0, 1.0, 0.01);
+	GetParam(mOsc1Fine)->InitInt("Fine1", 0, -100, 100);
 	GetParam(mOsc1Fine)->SetShape(1);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 195, kGreenRow, mOsc1Fine, &greenKnobCenterBitmap));
 
@@ -102,7 +102,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(new IKnobMultiControl(this, 437, kGreenRow, mOsc2Coarse, &greenKnobCenterBitmap));
 
 	// OSC2 Fine knob:
-	GetParam(mOsc2Fine)->InitDouble("Fine2", 0.0, -1.0, 1.0, 0.01);
+	GetParam(mOsc2Fine)->InitInt("Fine2", 0, -100, 100);
 	GetParam(mOsc2Fine)->SetShape(1);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 491, kGreenRow, mOsc2Fine, &greenKnobCenterBitmap));
 	
@@ -230,8 +230,20 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mOsc1Waveform:
 		voiceManager.setOscillatorModeForEachVoice(1, static_cast<Oscillator::OscillatorMode>(GetParam(mOsc1Waveform)->Int()));
 		break;
+	case mOsc1Coarse:
+		voiceManager.setSemiOffsetForEachVoice(1, GetParam(paramIdx)->Value());
+		break;
+	case mOsc1Fine:
+		voiceManager.setCentOffsetForEachVoice(1, GetParam(paramIdx)->Value());
+		break;
 	case mOsc2Waveform:
 		voiceManager.setOscillatorModeForEachVoice(2, static_cast<Oscillator::OscillatorMode>(GetParam(mOsc2Waveform)->Int()));
+		break;
+	case mOsc2Coarse:
+		voiceManager.setSemiOffsetForEachVoice(2, GetParam(paramIdx)->Value());
+		break;
+	case mOsc2Fine:
+		voiceManager.setCentOffsetForEachVoice(2, GetParam(paramIdx)->Value());
 		break;
 	case mOscillatorMix:
 		voiceManager.setOscillatorMixForEachVoice(GetParam(paramIdx)->Value());

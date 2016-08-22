@@ -105,3 +105,27 @@ void VoiceManager::setAmpAmountForEachVoice(double amount) {
 		voices[i].mAmpEnvelopeAmount = amount;
 	}
 }
+
+void VoiceManager::setSemiOffsetForEachVoice(int oscID, int semi) {
+	if (oscID == 1) {
+		for (int i = 0; i < NumberOfVoices; i++) {
+			voices[i].mSemiOffset1 = semi;
+		}
+	} else {
+		for (int i = 0; i < NumberOfVoices; i++) {
+			voices[i].mSemiOffset2 = semi;
+		}
+	}
+}
+
+void VoiceManager::setCentOffsetForEachVoice(int oscID, int cent) {
+	if (oscID == 1) {
+		for (int i = 0; i < NumberOfVoices; i++) {
+			voices[i].mCentOffset1 = cent;
+		}
+	} else {
+		for (int i = 0; i < NumberOfVoices; i++) {
+			voices[i].mCentOffset2 = cent;
+		}
+	}
+}
