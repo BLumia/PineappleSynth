@@ -1,10 +1,10 @@
 #define PLUG_MFR "BLumia"
-#define PLUG_NAME "Synthesis"
+#define PLUG_NAME "Pineapple Synth - Mini"
 
 #define PLUG_CLASS_NAME Synthesis
 
 #define BUNDLE_MFR "BLumia"
-#define BUNDLE_NAME "Synthesis"
+#define BUNDLE_NAME "Pineapple Synth - Mini"
 
 #define PLUG_ENTRY Synthesis_Entry
 #define PLUG_VIEW_ENTRY Synthesis_ViewEntry
@@ -21,7 +21,7 @@
 
 // http://service.steinberg.de/databases/plugin.nsf/plugIn?openForm
 // 4 chars, single quotes. At least one capital letter
-#define PLUG_UNIQUE_ID 'Ipef'
+#define PLUG_UNIQUE_ID 'haBL'
 // make sure this is not the same as BUNDLE_MFR
 #define PLUG_MFR_ID 'Acme'
 
@@ -34,7 +34,7 @@
 #endif
 
 #define PLUG_MFR_PT "BLumia\nBLumia\nAcme"
-#define PLUG_NAME_PT "Synthesis\nIPEF"
+#define PLUG_NAME_PT "Pineapple Synth - Mini\nhaBL"
 #define PLUG_TYPE_PT "Effect"
 #define PLUG_DOES_AUDIOSUITE 1
 

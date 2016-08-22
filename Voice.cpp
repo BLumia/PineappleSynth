@@ -3,8 +3,8 @@
 double Voice::nextSample() {
 	if (!isActive) return 0.0;
 
-	double oscillator1Output = mOscillator1.nextSample();
-	double oscillator2Output = mOscillator2.nextSample();
+	double oscillator1Output = mOscillatorMix == 1 ? 0.0 : mOscillator1.nextSample();
+	double oscillator2Output = mOscillatorMix == 0 ? 0.0 : mOscillator2.nextSample();
 	double oscillatorSum = ((1 - mOscillatorMix) * oscillator1Output) + (mOscillatorMix * oscillator2Output);
 
 	double ampEnvelopeValue = mAmpEnvelope.nextSample();

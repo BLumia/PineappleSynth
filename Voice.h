@@ -32,7 +32,7 @@ public:
 		mNoteNumber(-1),
 		mVelocity(0),
 		mFilterEnvelopeAmount(0.0),
-		mAmpEnvelopeAmount(1.0),
+		mAmpEnvelopeAmount(50.0),
 		mSemiOffset1(0),
 		mSemiOffset2(0),
 		mCentOffset1(0),

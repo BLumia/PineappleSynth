@@ -27,24 +27,23 @@ double ADSRVisualizationControl::convertToPercentY(double value) {
 };
 
 bool ADSRVisualizationControl::Draw(IGraphics *pGraphics) {
-	IColor color(255, 50, 200, 20);
 
 	//Cycles
-	pGraphics->DrawCircle(&color, convertToGraphicX(startPoint.x), convertToGraphicY(startPoint.y), 3, 0, true);
-	pGraphics->DrawCircle(&color, convertToGraphicX(attackPoint.x), convertToGraphicY(attackPoint.y), 3, 0, true);
-	pGraphics->DrawCircle(&color, convertToGraphicX(retainPoint.x), convertToGraphicY(retainPoint.y), 3, 0, true);
-	pGraphics->DrawCircle(&color, convertToGraphicX(endPoint.x), convertToGraphicY(endPoint.y), 3, 0, true);
+	pGraphics->DrawCircle(&lineColor, convertToGraphicX(startPoint.x), convertToGraphicY(startPoint.y), 3, 0, true);
+	pGraphics->DrawCircle(&lineColor, convertToGraphicX(attackPoint.x), convertToGraphicY(attackPoint.y), 3, 0, true);
+	pGraphics->DrawCircle(&lineColor, convertToGraphicX(retainPoint.x), convertToGraphicY(retainPoint.y), 3, 0, true);
+	pGraphics->DrawCircle(&lineColor, convertToGraphicX(endPoint.x), convertToGraphicY(endPoint.y), 3, 0, true);
 
 	//Lines
-	pGraphics->DrawLine(&color,
+	pGraphics->DrawLine(&lineColor,
 		convertToGraphicX(startPoint.x), convertToGraphicY(startPoint.y),
 		convertToGraphicX(attackPoint.x), convertToGraphicY(attackPoint.y),
 		0, true);
-	pGraphics->DrawLine(&color,
+	pGraphics->DrawLine(&lineColor,
 		convertToGraphicX(attackPoint.x), convertToGraphicY(attackPoint.y),
 		convertToGraphicX(retainPoint.x), convertToGraphicY(retainPoint.y),
 		0, true);
-	pGraphics->DrawLine(&color,
+	pGraphics->DrawLine(&lineColor,
 		convertToGraphicX(retainPoint.x), convertToGraphicY(retainPoint.y),
 		convertToGraphicX(endPoint.x), convertToGraphicY(endPoint.y),
 		0, true);

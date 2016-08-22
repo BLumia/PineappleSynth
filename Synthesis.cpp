@@ -139,6 +139,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	// ADSR Visualization
 	ampAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, kOrangeRow + 7, 648, kOrangeRow + 55));
+	ampAdsrVisualization->setColor(IColor(100, 235, 124, 6));
 	pGraphics->AttachControl(ampAdsrVisualization);
 
 	// Filter switch
@@ -182,6 +183,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	// Filter ADSR Visualization
 	filterEnvAdsrVisualization = new ADSRVisualizationControl(this, IRECT(546, kBlueRow + 7, 648, kBlueRow + 55));
+	filterEnvAdsrVisualization->setColor(IColor(100, 25, 121, 173));
 	pGraphics->AttachControl(filterEnvAdsrVisualization);
 
 	AttachGraphics(pGraphics);
@@ -190,6 +192,12 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	mMIDIReceiver.noteOn.Connect(&voiceManager, &VoiceManager::onNoteOn);
 	mMIDIReceiver.noteOff.Connect(&voiceManager, &VoiceManager::onNoteOff);
+
+	// some host will not auto-reset the params so it will not set the adsr value, do it here.
+	ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
+		ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
+	filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
+		filterAdsrKnobs[E_Sus]->GetValue(), filterAdsrKnobs[E_Rel]->GetValue());
 
 }
 
