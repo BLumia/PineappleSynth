@@ -129,3 +129,15 @@ void VoiceManager::setCentOffsetForEachVoice(int oscID, int cent) {
 		}
 	}
 }
+
+void VoiceManager::setBitCrusherEnabledForEachVoice(bool enabled) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].setOscillatorBitCrusher(enabled);
+	}
+}
+
+void VoiceManager::setPhaseStartForEachVoice(bool enabled) {
+	for (int i = 0; i < NumberOfVoices; i++) {
+		voices[i].setPhaseStart(enabled);
+	}
+}

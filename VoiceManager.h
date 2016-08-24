@@ -4,8 +4,8 @@
 
 class VoiceManager {
 private:
-	static const int NumberOfVoices = 64;
-	Voice voices[NumberOfVoices];
+	int NumberOfVoices = 64; // need a static const?
+	Voice voices[64]; // Max voice count: 64
 	Voice* findFreeVoice();
 public:
 	void onNoteOn(int noteNumber, int velocity);
@@ -19,6 +19,7 @@ public:
 			voice.mOscillator2.setSampleRate(sampleRate);
 		}
 	}
+	void setNumberOfVoices(int num) { NumberOfVoices = num; };
 	void setOscillatorMixForEachVoice(double mix);
 	void setOscillatorModeForEachVoice(int oscID, Oscillator::OscillatorMode mode);
 	void setFilterModeForEachVoice(Filter::FilterMode mode);
@@ -30,5 +31,7 @@ public:
 	void setAmpAmountForEachVoice(double amount);
 	void setSemiOffsetForEachVoice(int oscID, int semi);
 	void setCentOffsetForEachVoice(int oscID, int cent);
+	void setBitCrusherEnabledForEachVoice(bool enabled);
+	void setPhaseStartForEachVoice(bool enabled);
 };
 

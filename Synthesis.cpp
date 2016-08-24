@@ -23,6 +23,9 @@ enum EParams
 	mOsc2Coarse,
 	mOsc2Fine,
 	mOscillatorMix,
+	mPhaseStart,
+	mBitCrusher,
+	mTejiBooster,
 	mAmpAmount,
 	mAttack,
 	mDecay,
@@ -68,17 +71,19 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	pGraphics->AttachControl(mVirtualKeyboard);
 
-	// Knob bitmap for ADSR
+	// Bitmaps
 	IBitmap greenKnobBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_ID, GREEN_KNOB_FN, 31);
 	IBitmap greenKnobCenterBitmap = pGraphics->LoadIBitmap(GREEN_KNOB_CENTER_ID, GREEN_KNOB_CENTER_FN, 31);
 	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
 	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31);
 	IBitmap orangeKnobBitmap = pGraphics->LoadIBitmap(ORANGE_KNOB_ID, ORANGE_KNOB_FN, 31);
+	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 5);
+	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
+	IBitmap switcherLightBitmap = pGraphics->LoadIBitmap(SWITCHER_LIGHT_ID, SWITCHER_LIGHT_FN, 2);
 
 	// OSC1 Waveform switch
 	GetParam(mOsc1Waveform)->InitEnum("Waveform1", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
-	GetParam(mOsc1Waveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
-	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 5);
+	GetParam(mOsc1Waveform)->SetDisplayText(0, "Sine"); 
 	pGraphics->AttachControl(new ISwitchControl(this, 42, kGreenRow + kSwitcherTopPadding, mOsc1Waveform, &waveformBitmap));
 
 	// OSC1 Coarse knob:
@@ -93,7 +98,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	// OSC2 Waveform switch
 	GetParam(mOsc2Waveform)->InitEnum("Waveform2", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
-	GetParam(mOsc2Waveform)->SetDisplayText(0, "Sine"); // Needed for VST3, thanks plunntic
+	GetParam(mOsc2Waveform)->SetDisplayText(0, "Sine"); 
 	pGraphics->AttachControl(new ISwitchControl(this, 346, kGreenRow + kSwitcherTopPadding, mOsc2Waveform, &waveformBitmap));
 
 	// OSC2 Coarse knob:
@@ -110,6 +115,21 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	GetParam(mOscillatorMix)->InitDouble("Osc Mix", 0.0, 0.0, 1.0, 0.001);
 	GetParam(mOscillatorMix)->SetShape(1);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 275, kGreenRow, mOscillatorMix, &greenKnobCenterBitmap));
+
+	// OSC Phase Start switch
+	GetParam(mPhaseStart)->InitEnum("Start", 1, 2);
+	GetParam(mPhaseStart)->SetDisplayText(0, "Start");
+	pGraphics->AttachControl(new ISwitchControl(this, 564, kGreenRow + 7, mPhaseStart, &switcherLightBitmap));
+
+	// OSC1 Waveform switch
+	GetParam(mBitCrusher)->InitEnum("Bit Crusher", 0, 2);
+	GetParam(mBitCrusher)->SetDisplayText(0, "Bit Crusher");
+	pGraphics->AttachControl(new ISwitchControl(this, 564, kGreenRow + 25, mBitCrusher, &switcherLightBitmap));
+
+	// OSC1 Waveform switch
+	GetParam(mTejiBooster)->InitEnum("Mono/Poly", 0, 2);
+	GetParam(mTejiBooster)->SetDisplayText(0, "Teji Booster");
+	pGraphics->AttachControl(new ISwitchControl(this, 564, kGreenRow + 43 + 1, mTejiBooster, &switcherLightBitmap));
 
 	// Amp amount knob:
 	GetParam(mAmpAmount)->InitDouble("Amp Amount", 50., 0., 100.0, 0.01, "%");
@@ -145,7 +165,6 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	// Filter switch
 	GetParam(mFilterMode)->InitEnum("Filter Mode", Filter::FILTER_MODE_LOWPASS, Filter::kNumFilterModes);
 	GetParam(mFilterMode)->SetDisplayText(0, "LP"); // Needed for VST3, thanks plunntic
-	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
 	pGraphics->AttachControl(new ISwitchControl(this, 42, kBlueRow + kSwitcherTopPadding, mFilterMode, &filtermodeBitmap));
 
 	// Filter options
@@ -193,7 +212,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	mMIDIReceiver.noteOn.Connect(&voiceManager, &VoiceManager::onNoteOn);
 	mMIDIReceiver.noteOff.Connect(&voiceManager, &VoiceManager::onNoteOff);
 
-	// some host will not auto-reset the params so it will not set the adsr value, do it here.
+	// Some host will not auto-reset the params so it will not set the adsr value, do it here.
 	ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
 		ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
 	filterEnvAdsrVisualization->setADSR(filterAdsrKnobs[E_Att]->GetValue(), filterAdsrKnobs[E_Dec]->GetValue(),
@@ -256,6 +275,15 @@ void Synthesis::OnParamChange(int paramIdx)
 	case mOscillatorMix:
 		voiceManager.setOscillatorMixForEachVoice(GetParam(paramIdx)->Value());
 		break;
+	case mPhaseStart:
+		voiceManager.setPhaseStartForEachVoice(static_cast<bool>(GetParam(paramIdx)->Int()));
+		break;
+	case mBitCrusher:
+		voiceManager.setBitCrusherEnabledForEachVoice(static_cast<bool>(GetParam(paramIdx)->Int()));
+		break;
+	case mTejiBooster:
+		voiceManager.setNumberOfVoices(GetParam(paramIdx)->Int() == 0 ? 64 : 32);
+		break;
 	case mAmpAmount:
 		voiceManager.setAmpAmountForEachVoice(GetParam(paramIdx)->Value());
 		break;
@@ -266,7 +294,6 @@ void Synthesis::OnParamChange(int paramIdx)
 		voiceManager.setAmpEnvStageValueForEachVoice(static_cast<EnvelopeGenerator::EnvelopeStage>(paramIdx - mAttack + 1), GetParam(paramIdx)->Value());
 		ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),
 			ampAdsrKnobs[E_Sus]->GetValue(), ampAdsrKnobs[E_Rel]->GetValue());
-		//ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue, ampAdsrKnobs[E_Dec]->GetValue, ampAdsrKnobs[E_Sus]->GetValue, ampAdsrKnobs[E_Rel]->GetValue);
 		break;
 	case mFilterCutoff:
 		voiceManager.setFilterCutoffForEachVoice(GetParam(paramIdx)->Value());

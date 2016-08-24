@@ -49,6 +49,8 @@ public:
 	inline void setSemiOffset2(int semi) { mSemiOffset2 = semi; }
 	inline void setCentOffset1(int cent) { mCentOffset1 = cent; }
 	inline void setCentOffset2(int cent) { mCentOffset2 = cent; }
+	inline void setOscillatorBitCrusher(bool enabled) { mOscillator1.setBitCrusher(enabled); mOscillator2.setBitCrusher(enabled); };
+	inline void setPhaseStart(bool enabled) { mOscillator1.setPhaseStart(enabled); mOscillator2.setPhaseStart(enabled); };
 	inline void setOscillatorMix(double mix) { mOscillatorMix = mix; }
 	inline void setNoteNumber(int noteNumber) {
 		mNoteNumber = noteNumber;
