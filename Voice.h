@@ -26,6 +26,8 @@ private:
 	int mSemiOffset2;
 	int mCentOffset1; //Fine knob
 	int mCentOffset2;
+	double pbendamount;
+	int mchannel;
 public:
 	friend class VoiceManager;
 	Voice() :
@@ -49,13 +51,16 @@ public:
 	inline void setSemiOffset2(int semi) { mSemiOffset2 = semi; }
 	inline void setCentOffset1(int cent) { mCentOffset1 = cent; }
 	inline void setCentOffset2(int cent) { mCentOffset2 = cent; }
+	inline void setPBAmount(double pb) { pbendamount=pb;setNoteNumber(mNoteNumber); }
+	inline void setChannel(int ch) { mchannel=ch; }
+	inline int channel() { return mchannel; }
 	inline void setOscillatorBitCrusher(bool enabled) { mOscillator1.setBitCrusher(enabled); mOscillator2.setBitCrusher(enabled); };
 	inline void setPhaseStart(bool enabled) { mOscillator1.setPhaseStart(enabled); mOscillator2.setPhaseStart(enabled); };
 	inline void setOscillatorMix(double mix) { mOscillatorMix = mix; }
 	inline void setNoteNumber(int noteNumber) {
 		mNoteNumber = noteNumber;
-		double frequency1 = 440.0 * pow(2.0, (mNoteNumber + mSemiOffset1 + (mCentOffset1 * 0.01) - 69.0) / 12.0);
-		double frequency2 = 440.0 * pow(2.0, (mNoteNumber + mSemiOffset2 + (mCentOffset2 * 0.01) - 69.0) / 12.0);
+		double frequency1 = 440.0 * pow(2.0, (mNoteNumber + mSemiOffset1 + pbendamount + (mCentOffset1 * 0.01) - 69.0) / 12.0);
+		double frequency2 = 440.0 * pow(2.0, (mNoteNumber + mSemiOffset2 + pbendamount + (mCentOffset2 * 0.01) - 69.0) / 12.0);
 		mOscillator1.setFrequency(frequency1);
 		mOscillator2.setFrequency(frequency2);
 	}

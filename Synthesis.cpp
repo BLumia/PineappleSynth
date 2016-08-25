@@ -211,6 +211,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	mMIDIReceiver.noteOn.Connect(&voiceManager, &VoiceManager::onNoteOn);
 	mMIDIReceiver.noteOff.Connect(&voiceManager, &VoiceManager::onNoteOff);
+	mMIDIReceiver.pbChanged.Connect(&voiceManager, &VoiceManager::onPbChanged);
 
 	// Some host will not auto-reset the params so it will not set the adsr value, do it here.
 	ampAdsrVisualization->setADSR(ampAdsrKnobs[E_Att]->GetValue(), ampAdsrKnobs[E_Dec]->GetValue(),

@@ -1,4 +1,5 @@
 #include "VoiceManager.h"
+#include "MIDIReceiver.h"
 
 Voice* VoiceManager::findFreeVoice() {
 	Voice* freeVoice = NULL;
@@ -11,12 +12,14 @@ Voice* VoiceManager::findFreeVoice() {
 	return freeVoice;
 }
 
-void VoiceManager::onNoteOn(int noteNumber, int velocity) {
+void VoiceManager::onNoteOn(int channel, int noteNumber, int velocity) {
 	Voice* voice = findFreeVoice();
 	if (!voice) {
 		return;
 	}
 	voice->reset();
+	voice->setChannel(channel);
+	voice->setPBAmount(pbendRange * MIDIReceiver::getReference()->getPitchBendAmount(channel));
 	voice->setNoteNumber(noteNumber);
 	voice->mVelocity = velocity;
 	voice->isActive = true;
@@ -24,7 +27,7 @@ void VoiceManager::onNoteOn(int noteNumber, int velocity) {
 	voice->mFilterEnvelope.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_ATTACK);
 }
 
-void VoiceManager::onNoteOff(int noteNumber, int velocity) {
+void VoiceManager::onNoteOff(int channel, int noteNumber, int velocity) {
 	// Find the voice(s) with the given noteNumber:
 	for (int i = 0; i < NumberOfVoices; i++) {
 		Voice& voice = voices[i];
@@ -32,6 +35,14 @@ void VoiceManager::onNoteOff(int noteNumber, int velocity) {
 			voice.mAmpEnvelope.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
 			voice.mFilterEnvelope.enterStage(EnvelopeGenerator::ENVELOPE_STAGE_RELEASE);
 		}
+	}
+}
+
+void VoiceManager::onPbChanged()
+{
+	for(int i = 0; i < NumberOfVoices; i++) {
+		if(voices[i].isActive)
+		voices[i].setPBAmount(pbendRange * MIDIReceiver::getReference()->getPitchBendAmount(voices[i].channel()));
 	}
 }
 

@@ -25,6 +25,7 @@ void Voice::setFree() {
 void Voice::reset() {
 	mNoteNumber = -1;
 	mVelocity = 0;
+	pbendamount = 0;
 	//mOscillatorMix = 0;
 	mOscillator1.reset();
 	mOscillator2.reset();

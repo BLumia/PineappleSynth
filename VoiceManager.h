@@ -7,9 +7,11 @@ private:
 	int NumberOfVoices = 64; // need a static const?
 	Voice voices[64]; // Max voice count: 64
 	Voice* findFreeVoice();
+	int pbendRange = 2;
 public:
-	void onNoteOn(int noteNumber, int velocity);
-	void onNoteOff(int noteNumber, int velocity);
+	void onNoteOn(int channel, int noteNumber, int velocity);
+	void onNoteOff(int channel, int noteNumber, int velocity);
+	void onPbChanged();
 	double nextSample();
 	void setSampleRate(double sampleRate) {
 		EnvelopeGenerator::setSampleRate(sampleRate);
@@ -19,6 +21,8 @@ public:
 			voice.mOscillator2.setSampleRate(sampleRate);
 		}
 	}
+	void setPBRange(int pbr) { pbendRange=pbr; }
+	int getPBRange() { return pbendRange; }
 	void setNumberOfVoices(int num) { NumberOfVoices = num; };
 	void setOscillatorMixForEachVoice(double mix);
 	void setOscillatorModeForEachVoice(int oscID, Oscillator::OscillatorMode mode);
