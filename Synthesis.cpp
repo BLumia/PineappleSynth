@@ -138,6 +138,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	// Attack knob:
 	ampAdsrKnobs[E_Att] = new IKnobMultiControl(this, 329, kOrangeRow, mAttack, &orangeKnobBitmap);
+	ampAdsrKnobs[E_Att]->SetTooltip("Amp Attach Envelope"); // Seems doesn't work. tested in savihost, fl studio and ableton live 9.
 	GetParam(mAttack)->InitDouble("Attack", 0.01, 0.01, 10.0, 0.001);
 	GetParam(mAttack)->SetShape(3);
 	pGraphics->AttachControl(ampAdsrKnobs[E_Att]);

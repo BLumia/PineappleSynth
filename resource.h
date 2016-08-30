@@ -23,7 +23,7 @@
 // 4 chars, single quotes. At least one capital letter
 #define PLUG_UNIQUE_ID 'haBL'
 // make sure this is not the same as BUNDLE_MFR
-#define PLUG_MFR_ID 'Acme'
+#define PLUG_MFR_ID 'BKT'
 
 // ProTools stuff
 
@@ -33,7 +33,7 @@
   const int PLUG_TYPE_IDS_AS[2] = {'EFA1', 'EFA2'}; // AudioSuite
 #endif
 
-#define PLUG_MFR_PT "BLumia\nBLumia\nAcme"
+#define PLUG_MFR_PT "BLumia\nBLumia\nBearKidsTeam"
 #define PLUG_NAME_PT "Pineapple Synth - Mini\nhaBL"
 #define PLUG_TYPE_PT "Effect"
 #define PLUG_DOES_AUDIOSUITE 1
