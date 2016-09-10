@@ -5,6 +5,7 @@
 #include "MIDIReceiver.h"
 #include "ADSRVisualizationControl.h"
 #include "VoiceManager.h"
+#include "../verbengine.h"
 
 class Synthesis : public IPlug
 {
@@ -26,6 +27,8 @@ public:
 	int lastVirtualKeyboardNoteNumber;
 
 private:
+	WDL_ReverbEngine mVerbEngine;
+	double mDry, mWet; 
 	double mFrequency;
 	void CreatePresets();
 	VoiceManager voiceManager;

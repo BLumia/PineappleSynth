@@ -39,6 +39,11 @@ enum EParams
 	mFilterSustain,
 	mFilterRelease,
 	mFilterEnvelopeAmount,
+	mVerbRoomSize,
+	mVerbDamp,
+	mVerbWidth,
+	mVerbDry,
+	mVerbWet,
 	kNumParams
 };
 
@@ -206,6 +211,13 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	filterEnvAdsrVisualization->setColor(IColor(100, 25, 121, 173));
 	pGraphics->AttachControl(filterEnvAdsrVisualization);
 
+	// Reverb
+	GetParam(mVerbRoomSize)->InitDouble("Room Size", 0.5, 0.3, 0.99, 0.001);
+	GetParam(mVerbDamp)->InitDouble("Dampening", 0.5, 0., 1., 0.001);
+	GetParam(mVerbWidth)->InitDouble("Width", 1., -1., 1., 0.001);
+	GetParam(mVerbDry)->InitDouble("Dry", 1., 0., 1., 0.001);
+	GetParam(mVerbWet)->InitDouble("Wet", 0.5, 0., 1., 0.001);
+
 	AttachGraphics(pGraphics);
 
 	CreatePresets();
@@ -227,6 +239,14 @@ Synthesis::~Synthesis() {}
 void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
 	// Mutex is already locked for us.
+	/*
+	if (mDry == 0. && mWet == 1.)
+	{
+		// Process the entire sample block at once (more efficient?).
+		mVerbEngine.ProcessSampleBlock(inputs[0], inputs[1], outputs[0], outputs[1], nFrames);
+		return;
+	}
+	*/
 
 	double *leftOutput = outputs[0];
 	double *rightOutput = outputs[1];
@@ -236,6 +256,15 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 		mMIDIReceiver.advance();
 		
 		leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
+		
+		// Verb
+		mVerbEngine.ProcessSample(leftOutput, rightOutput);
+		// Mix dry/wet
+		/* FIXME: wtf bug idk
+		if (i == nFrames - 1) break;
+		*leftOutput++ = mWet * *leftOutput;
+		*rightOutput++ = mWet * *rightOutput;
+		*/
 	}
 
 	mMIDIReceiver.Flush(nFrames);
@@ -250,6 +279,7 @@ void Synthesis::Reset()
 	TRACE;
 	IMutexLock lock(this);
 	voiceManager.setSampleRate(GetSampleRate());
+	mVerbEngine.SetSampleRate(GetSampleRate());
 }
 
 void Synthesis::OnParamChange(int paramIdx)
@@ -316,6 +346,24 @@ void Synthesis::OnParamChange(int paramIdx)
 		break;
 	case mFilterEnvelopeAmount:
 		voiceManager.setFilterAmountForEachVoice(GetParam(paramIdx)->Value());
+		break;
+
+	case mVerbRoomSize:
+		mVerbEngine.SetRoomSize(GetParam(paramIdx)->Value());
+		mVerbEngine.Reset();
+		break;
+	case mVerbDamp:
+		mVerbEngine.SetDampening(GetParam(paramIdx)->Value());
+		mVerbEngine.Reset();
+		break;
+	case mVerbWidth:
+		mVerbEngine.SetWidth(GetParam(paramIdx)->Value());
+		break;
+	case mVerbDry:
+		mDry = GetParam(paramIdx)->Value();
+		break;
+	case mVerbWet:
+		mWet = GetParam(paramIdx)->Value();
 		break;
 	}
 }
