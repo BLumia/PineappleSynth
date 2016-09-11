@@ -250,8 +250,9 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 	if (mDry == 0. && mWet == 1.)
 	{
 		// Process the entire sample block at once (more efficient?).
+		// Inputs should from voiceManager. **inputs is NOT writeable for such a vsti.
 		mVerbEngine.ProcessSampleBlock(inputs[0], inputs[1], outputs[0], outputs[1], nFrames);
-		return;
+		return; // MIDIReceiver.
 	}
 	*/
 	double* ori_l;

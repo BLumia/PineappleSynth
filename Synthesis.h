@@ -28,7 +28,7 @@ public:
 
 private:
 	WDL_ReverbEngine mVerbEngine;
-	double mDry, mWet; 
+	double mDry = 1., mWet = 0.5; 
 	double mFrequency;
 	void CreatePresets();
 	VoiceManager voiceManager;
