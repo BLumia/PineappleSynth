@@ -52,10 +52,11 @@ enum ELayout
 	kWidth = GUI_WIDTH,
 	kHeight = GUI_HEIGHT,
 	kKeybX = 12,
-	kKeybY = 226,
+	kKeybY = 297,
 	kGreenRow = 10,
 	kOrangeRow = 80,
 	kBlueRow = 150,
+	kPurpleRow = 220,
 	kSwitcherTopPadding = 10,
 };
 
@@ -82,6 +83,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	IBitmap blueKnobBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_ID, BLUE_KNOB_FN, 31);
 	IBitmap blueKnobCenterBitmap = pGraphics->LoadIBitmap(BLUE_KNOB_CENTER_ID, BLUE_KNOB_CENTER_FN, 31);
 	IBitmap orangeKnobBitmap = pGraphics->LoadIBitmap(ORANGE_KNOB_ID, ORANGE_KNOB_FN, 31);
+	IBitmap purpleKnobBitmap = pGraphics->LoadIBitmap(PURPLE_KNOB_ID, PURPLE_KNOB_FN, 31);
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 5);
 	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
 	IBitmap switcherLightBitmap = pGraphics->LoadIBitmap(SWITCHER_LIGHT_ID, SWITCHER_LIGHT_FN, 2);
@@ -213,10 +215,15 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 	// Reverb
 	GetParam(mVerbRoomSize)->InitDouble("Room Size", 0.5, 0.3, 0.99, 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 137, kPurpleRow, mVerbRoomSize, &purpleKnobBitmap));
 	GetParam(mVerbDamp)->InitDouble("Dampening", 0.5, 0., 1., 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 195, kPurpleRow, mVerbDamp, &purpleKnobBitmap));
 	GetParam(mVerbWidth)->InitDouble("Width", 1., -1., 1., 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 255, kPurpleRow, mVerbWidth, &purpleKnobBitmap));
 	GetParam(mVerbDry)->InitDouble("Dry", 1., 0., 1., 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 329, kPurpleRow, mVerbDry, &purpleKnobBitmap));
 	GetParam(mVerbWet)->InitDouble("Wet", 0.5, 0., 1., 0.001);
+	pGraphics->AttachControl(new IKnobMultiControl(this, 383, kPurpleRow, mVerbWet, &purpleKnobBitmap));
 
 	AttachGraphics(pGraphics);
 
@@ -247,7 +254,11 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 		return;
 	}
 	*/
-
+	double* ori_l;
+	double* ori_r;
+	ori_l = (double*)malloc(nFrames * sizeof(double));
+	ori_r = (double*)malloc(nFrames * sizeof(double));
+	
 	double *leftOutput = outputs[0];
 	double *rightOutput = outputs[1];
 
@@ -255,17 +266,18 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 	for (int i = 0; i < nFrames; ++i) {
 		mMIDIReceiver.advance();
 		
-		leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
+		ori_l[i] = ori_r[i] = leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
 		
-		// Verb
-		mVerbEngine.ProcessSample(leftOutput, rightOutput);
+		// Reverb
+		mVerbEngine.ProcessSample(leftOutput + i, rightOutput + i);
 		// Mix dry/wet
-		/* FIXME: wtf bug idk
-		if (i == nFrames - 1) break;
-		*leftOutput++ = mWet * *leftOutput;
-		*rightOutput++ = mWet * *rightOutput;
-		*/
+		leftOutput[i] = mDry * ori_l[i] + mWet * leftOutput[i];
+		rightOutput[i] = mDry * ori_r[i] + mWet * rightOutput[i];
+		
 	}
+
+	free(ori_l);
+	free(ori_r);
 
 	mMIDIReceiver.Flush(nFrames);
 }

@@ -65,11 +65,12 @@ instrument determined by PLUG _IS _INST
 #define WAVEFORM_ID   103
 #define GREEN_KNOB_ID 104
 #define BLUE_KNOB_ID  105
-#define FILTERMODE_ID 106
-#define BLUE_KNOB_CENTER_ID  107
-#define ORANGE_KNOB_ID       108
-#define GREEN_KNOB_CENTER_ID 109
-#define SWITCHER_LIGHT_ID    110
+#define FILTERMODE_ID   106
+#define ORANGE_KNOB_ID  107
+#define PURPLE_KNOB_ID  108
+#define BLUE_KNOB_CENTER_ID  109
+#define GREEN_KNOB_CENTER_ID 110
+#define SWITCHER_LIGHT_ID    111
 
 // Image resource locations for this plug.
 #define BG_FN         "resources/img/bg.png"
@@ -78,9 +79,10 @@ instrument determined by PLUG _IS _INST
 #define GREEN_KNOB_FN "resources/img/greenknob.png"
 #define BLUE_KNOB_FN  "resources/img/blueknob.png"
 #define FILTERMODE_FN "resources/img/filtermode.png"
+#define ORANGE_KNOB_FN "resources/img/orangeknob.png"
+#define PURPLE_KNOB_FN "resources/img/purpleknob.png"
 #define GREEN_KNOB_CENTER_FN  "resources/img/greenknob-center0.png"
 #define BLUE_KNOB_CENTER_FN  "resources/img/blueknob-center0.png"
-#define ORANGE_KNOB_FN "resources/img/orangeknob.png"
 #define SWITCHER_LIGHT_FN "resources/img/switcherlight.png"
 
 // GUI default dimensions
