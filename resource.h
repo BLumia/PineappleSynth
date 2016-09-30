@@ -71,6 +71,7 @@ instrument determined by PLUG _IS _INST
 #define BLUE_KNOB_CENTER_ID  109
 #define GREEN_KNOB_CENTER_ID 110
 #define SWITCHER_LIGHT_ID    111
+#define SWITCHER_ONOFF_ID    112
 
 // Image resource locations for this plug.
 #define BG_FN         "resources/img/bg.png"
@@ -84,6 +85,7 @@ instrument determined by PLUG _IS _INST
 #define GREEN_KNOB_CENTER_FN  "resources/img/greenknob-center0.png"
 #define BLUE_KNOB_CENTER_FN  "resources/img/blueknob-center0.png"
 #define SWITCHER_LIGHT_FN "resources/img/switcherlight.png"
+#define SWITCHER_ONOFF_FN "resources/img/switcheronoff.png"
 
 // GUI default dimensions
 #define GUI_WIDTH 665

@@ -44,6 +44,7 @@ enum EParams
 	mVerbWidth,
 	mVerbDry,
 	mVerbWet,
+	mVerbOn,
 	kNumParams
 };
 
@@ -87,6 +88,7 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	IBitmap waveformBitmap = pGraphics->LoadIBitmap(WAVEFORM_ID, WAVEFORM_FN, 5);
 	IBitmap filtermodeBitmap = pGraphics->LoadIBitmap(FILTERMODE_ID, FILTERMODE_FN, 3);
 	IBitmap switcherLightBitmap = pGraphics->LoadIBitmap(SWITCHER_LIGHT_ID, SWITCHER_LIGHT_FN, 2);
+	IBitmap switcherOnOffBitmap = pGraphics->LoadIBitmap(SWITCHER_ONOFF_ID, SWITCHER_ONOFF_FN, 2);
 
 	// OSC1 Waveform switch
 	GetParam(mOsc1Waveform)->InitEnum("Waveform1", Oscillator::OSCILLATOR_MODE_SINE, Oscillator::kNumOscillatorModes);
@@ -214,6 +216,11 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	pGraphics->AttachControl(filterEnvAdsrVisualization);
 
 	// Reverb
+	// Reverb switch
+	GetParam(mVerbOn)->InitEnum("Reverb On/Off", 0, 2);
+	GetParam(mVerbOn)->SetDisplayText(0, "On"); 
+	pGraphics->AttachControl(new ISwitchControl(this, 42, kPurpleRow + kSwitcherTopPadding, mVerbOn, &switcherOnOffBitmap));
+
 	GetParam(mVerbRoomSize)->InitDouble("Room Size", 0.5, 0.3, 0.99, 0.001);
 	pGraphics->AttachControl(new IKnobMultiControl(this, 137, kPurpleRow, mVerbRoomSize, &purpleKnobBitmap));
 	GetParam(mVerbDamp)->InitDouble("Dampening", 0.5, 0., 1., 0.001);
@@ -241,7 +248,10 @@ Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 
 }
 
-Synthesis::~Synthesis() {}
+Synthesis::~Synthesis() {
+	if (ori_l != nullptr) free(ori_l);
+	if (ori_r != nullptr) free(ori_r);
+}
 
 void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nFrames)
 {
@@ -255,30 +265,32 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 		return; // MIDIReceiver.
 	}
 	*/
-	double* ori_l;
-	double* ori_r;
-	ori_l = (double*)malloc(nFrames * sizeof(double));
-	ori_r = (double*)malloc(nFrames * sizeof(double));
 	
+	// don't alloc new mem space every time we call ProcessDoubleReplacing. Will faster?
+	if (ori_l == nullptr || sizeof(*ori_l) != nFrames * sizeof(double)) ori_l = (double*)malloc(nFrames * sizeof(double));
+	if (ori_r == nullptr || sizeof(*ori_r) != nFrames * sizeof(double)) ori_r = (double*)malloc(nFrames * sizeof(double));
+
 	double *leftOutput = outputs[0];
 	double *rightOutput = outputs[1];
+	bool verbFxOn = GetParam(mVerbOn)->Int() == 0;
 
 	processVirtualKeyboard();
 	for (int i = 0; i < nFrames; ++i) {
 		mMIDIReceiver.advance();
 		
-		ori_l[i] = ori_r[i] = leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
-		
-		// Reverb
-		mVerbEngine.ProcessSample(leftOutput + i, rightOutput + i);
-		// Mix dry/wet
-		leftOutput[i] = mDry * ori_l[i] + mWet * leftOutput[i];
-		rightOutput[i] = mDry * ori_r[i] + mWet * rightOutput[i];
-		
-	}
+		if (!verbFxOn) {
+			//Off
+			leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
+		} else {
+			ori_l[i] = ori_r[i] = leftOutput[i] = rightOutput[i] = voiceManager.nextSample();
 
-	free(ori_l);
-	free(ori_r);
+			// Reverb
+			mVerbEngine.ProcessSample(leftOutput + i, rightOutput + i);
+			// Mix dry/wet
+			leftOutput[i] = mDry * ori_l[i] + mWet * leftOutput[i];
+			rightOutput[i] = mDry * ori_r[i] + mWet * rightOutput[i];
+		}
+	}
 
 	mMIDIReceiver.Flush(nFrames);
 }

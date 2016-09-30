@@ -29,6 +29,7 @@ public:
 private:
 	WDL_ReverbEngine mVerbEngine;
 	double mDry = 1., mWet = 0.5; 
+	double *ori_l = nullptr, *ori_r = nullptr; // to make free alloced space easy.
 	double mFrequency;
 	void CreatePresets();
 	VoiceManager voiceManager;
