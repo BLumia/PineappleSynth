@@ -1,6 +1,10 @@
 #ifndef __SYNTHESIS__
 #define __SYNTHESIS__
-
+//Memory leakage debugging
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+//end of memory leakage debugging
 #include "IPlug_include_in_plug_hdr.h"
 #include "MIDIReceiver.h"
 #include "ADSRVisualizationControl.h"

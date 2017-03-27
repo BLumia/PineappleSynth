@@ -64,7 +64,7 @@ enum ELayout
 Synthesis::Synthesis(IPlugInstanceInfo instanceInfo)
 	: IPLUG_CTOR(kNumParams, kNumPrograms, instanceInfo),
 	lastVirtualKeyboardNoteNumber(virtualKeyboardMinimumNoteNumber - 1) {
-
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	TRACE;
 
 	IGraphics* pGraphics = MakeGraphics(this, kWidth, kHeight);
@@ -267,8 +267,14 @@ void Synthesis::ProcessDoubleReplacing(double** inputs, double** outputs, int nF
 	*/
 	
 	// don't alloc new mem space every time we call ProcessDoubleReplacing. Will faster?
-	if (ori_l == nullptr || sizeof(*ori_l) != nFrames * sizeof(double)) ori_l = (double*)malloc(nFrames * sizeof(double));
-	if (ori_r == nullptr || sizeof(*ori_r) != nFrames * sizeof(double)) ori_r = (double*)malloc(nFrames * sizeof(double));
+	if (ori_l == nullptr || sizeof(*ori_l) < nFrames * sizeof(double)) {
+		if (ori_l) {free(ori_l); ori_l = nullptr;}
+		ori_l = (double*)malloc(nFrames * sizeof(double));
+	}
+	if (ori_r == nullptr || sizeof(*ori_r) < nFrames * sizeof(double)) {
+		if(ori_r) { free(ori_r); ori_r = nullptr; }
+		ori_r = (double*)malloc(nFrames * sizeof(double));
+	}
 
 	double *leftOutput = outputs[0];
 	double *rightOutput = outputs[1];
